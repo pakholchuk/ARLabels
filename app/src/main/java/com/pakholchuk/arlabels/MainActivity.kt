@@ -1,9 +1,14 @@
 package com.pakholchuk.arlabels
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.CameraSelector
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -14,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.ui.tooling.preview.Preview
 import com.pakholchuk.arlabels.databinding.ActivityMainBinding
 import com.pakholchuk.arlabels.ui.ARLabelsTheme
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -41,7 +47,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
+        val cameraProviderFuture
+                = ProcessCameraProvider.getInstance(this)
+        cameraProviderFuture.addListener(Runnable {
+            val cameraProvider = cameraProviderFuture.get()
+            val preview = androidx.camera.core.Preview.Builder()
+                .build()
+                .also { it.setSurfaceProvider(binding.viewFinder.surfaceProvider) }
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
+            try {
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    this, cameraSelector, preview
+                )
+            } catch (e: Exception) {
+                Log.e("TAG", "Use case binding failed", e)
+            }
+        }, ContextCompat.getMainExecutor(this))
+    }
+
+    @SuppressLint("MissingSuperCall")
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>, grantResults:
+        IntArray) {
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
+                startCamera()
+            } else {
+                Toast.makeText(this,
+                    "Permissions not granted by the user.",
+                    Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        }
     }
 }
 
