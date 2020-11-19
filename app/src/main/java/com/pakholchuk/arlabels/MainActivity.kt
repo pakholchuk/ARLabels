@@ -9,11 +9,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.graphics.Color
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.ui.tooling.preview.Preview
@@ -38,8 +37,24 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(
                 this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
+        val labels = mutableListOf<LabelProperties>()
+        for (i in -10..10) labels.add(
+            LabelProperties(
+                10, i*30, i*50, 50, "this is $i", "label$i"
+            )
+        )
+
+        binding.compose.setContent {
+            Labels(labels = labels, onLabelClick = ::onLabelClick)
+        }
 
     }
+
+    fun onLabelClick(id: String) {
+        Toast.makeText(this, id, Toast.LENGTH_SHORT).show()
+    }
+
+
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
@@ -83,16 +98,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ARLabelsTheme {
-        Greeting("Android")
-    }
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun DefaultPreview() {
+//    val labels = mutableListOf<LabelProperties>()
+//    for (i in 1..10) labels.add(
+//        LabelProperties(
+//            10, i*10f, i*30f, 50, "this is $i", "label$i"
+//        )
+//    )
+//
+//    Labels(labels = labels, onLabelClick = {})
+//
+//}
