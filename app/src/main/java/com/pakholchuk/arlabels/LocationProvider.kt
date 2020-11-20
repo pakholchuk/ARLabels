@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlin.math.roundToInt
 
 @SuppressLint("MissingPermission")
-class LocationProvider {
+class LocationProvider(private val context: Context){
     companion object {
         private const val LOCATION_REQUEST_INTERVAL = 5000L
         private const val FASTEST_REQUEST_INTERVAL = 20L
@@ -39,7 +39,7 @@ class LocationProvider {
         return locationA.distanceTo(locationB).roundToInt()
     }
 
-    fun getLocationUpdates(context: Context): Flow<LocationData> =
+    fun getLocationUpdates(): Flow<LocationData> =
         CoLocation.from(context)
             .getLocationUpdates(locationRequest)
             .map { LocationData(it.latitude, it.longitude) }
