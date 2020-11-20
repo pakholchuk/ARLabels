@@ -6,13 +6,17 @@ import android.content.Context
 import android.location.Location
 import com.google.android.gms.location.LocationRequest
 import com.patloew.colocation.CoLocation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlin.math.roundToInt
 
 @SuppressLint("MissingPermission")
-class LocationProvider(private val context: Context){
+class LocationProvider(private val coLocation: CoLocation){
     companion object {
         private const val LOCATION_REQUEST_INTERVAL = 5000L
         private const val FASTEST_REQUEST_INTERVAL = 20L
@@ -39,10 +43,11 @@ class LocationProvider(private val context: Context){
         return locationA.distanceTo(locationB).roundToInt()
     }
 
-    fun getLocationUpdates(): Flow<LocationData> =
-        CoLocation.from(context)
+    fun getLocationUpdates(): Flow<LocationData> {
+        return coLocation
             .getLocationUpdates(locationRequest)
             .map {
                 LocationData(it.latitude, it.longitude)
             }
+    }
 }

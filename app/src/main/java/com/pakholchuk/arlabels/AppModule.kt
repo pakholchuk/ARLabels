@@ -5,6 +5,7 @@ import android.hardware.SensorManager
 import android.view.WindowManager
 import androidx.core.content.getSystemService
 import com.pakholchuk.arlabels.App.Companion.context
+import com.patloew.colocation.CoLocation
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,6 +35,10 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun providesLocationProvider(@ApplicationContext context: Context) = LocationProvider(context)
+    fun providesLocationProvider(coLocation: CoLocation) = LocationProvider(coLocation)
+
+    @Singleton
+    @Provides
+    fun providesCoLocation(@ApplicationContext context: Context) = CoLocation.from(context)
 
 }
