@@ -19,7 +19,7 @@ import androidx.ui.tooling.preview.Preview
 import com.pakholchuk.arlabels.databinding.ActivityMainBinding
 import com.pakholchuk.arlabels.ui.ARLabelsTheme
 import java.lang.Exception
-
+const val TAG = "fatal_log"
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
