@@ -42,5 +42,7 @@ class LocationProvider(private val context: Context){
     fun getLocationUpdates(): Flow<LocationData> =
         CoLocation.from(context)
             .getLocationUpdates(locationRequest)
-            .map { LocationData(it.latitude, it.longitude) }
+            .map {
+                LocationData(it.latitude, it.longitude)
+            }
 }

@@ -84,28 +84,29 @@ import kotlin.math.roundToInt
         (LOW_PASS_FILTER_ALPHA_PRECISE - LOW_PASS_FILTER_ALPHA_NORMAL) /
                 centerPosition * positionX + LOW_PASS_FILTER_ALPHA_NORMAL
 
-//    fun prepareLabelsProperties(
-//        compassData: CompassData, viewWidth: Int,
-//        viewHeight: Int
-//    ): List<LabelProperties> {
-//
-//        return compassData.destinations
-//            .filter { shouldShowLabel(it.currentDestinationAzimuth) }
-//            .sortedByDescending { it.distanceToDestination }
-//            .map { destinationData ->
-//                LabelProperties(
-//                    destinationData.distanceToDestination,
-//                    calculatePositionX(destinationData.currentDestinationAzimuth, viewWidth).toInt(),
-//                    calculatePositionY(compassData.orientationData.currentPitch, viewHeight).toInt(),
-//                    getAlphaValue(
-//                        compassData.maxDistance,
-//                        compassData.minDistance,
-//                        destinationData.distanceToDestination
-//                    ),
-//                    unitId = destinationData.destinationLocation.hashCode()
-//                )
-//            }
-//    }
+    fun prepareLabelsProperties(
+        compassData: CompassData, viewWidth: Int,
+        viewHeight: Int
+    ): List<LabelProperties> {
+
+        return compassData.destinations
+            .filter { shouldShowLabel(it.currentDestinationAzimuth) }
+            .sortedByDescending { it.distanceToDestination }
+            .map { destinationData ->
+                LabelProperties(
+                    destinationData.distanceToDestination,
+                    calculatePositionX(destinationData.currentDestinationAzimuth, viewWidth).toInt(),
+                    calculatePositionY(compassData.orientationData.currentPitch, viewHeight).toInt(),
+                    getAlphaValue(
+                        compassData.maxDistance,
+                        compassData.minDistance,
+                        destinationData.distanceToDestination
+                    ),
+                    unitId = destinationData.destinationUnit.id,
+                    title = "${destinationData.destinationUnit.name} \n ${destinationData.distanceToDestination} m"
+                )
+            }
+    }
 
     private fun getAlphaValue(maxDistance: Int, minDistance: Int, distanceToDestination: Int): Int {
         return when (maxDistance) {
