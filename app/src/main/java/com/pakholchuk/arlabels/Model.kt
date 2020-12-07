@@ -9,12 +9,13 @@ data class LabelProperties(
     val positionY: Int,
     val alpha: Int,
     val title: String = "",
-    val unitId: String = ""
+    val pointID: String = "",
+    var additionalProperties: Any? = null
 )
 
-data class UnitPoint(
+data class Point(
     val id: String,
-    val name: String,
+    val title: String,
     val location: LocationData,
 )
 
@@ -31,12 +32,18 @@ data class CompassData(
     val destinations: List<DestinationData>,
     val maxDistance: Int,
     val minDistance: Int,
-    val currentLocation: LocationData
+    val currentLocation: LocationData,
+    val labelDataList: List<ARLabelData>
 )
 
 data class DestinationData(
     val currentDestinationAzimuth: Float,
     val distanceToDestination: Int,
     val destinationLocation: LocationData,
-    val destinationUnit: UnitPoint
+    val destinationPoint: Point
+)
+
+data class ARLabelData(
+    val point: Point,
+    val additionalLabelProperties: Any? = null
 )

@@ -2,7 +2,6 @@ package com.pakholchuk.arlabels
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import kotlinx.coroutines.flow.collect
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -19,8 +18,8 @@ class MainViewModel @ViewModelInject constructor (private val repository: Compas
         }
     }
 
-    fun setUnitPoints(list: List<UnitPoint>) {
-        repository.unitPoints = list
+    fun setARLabelData(list: List<ARLabelData>) {
+        repository.labelDataList = list
     }
 
     fun setLowPassFilterAlpha(lowPassFilterAlpha: Float) {

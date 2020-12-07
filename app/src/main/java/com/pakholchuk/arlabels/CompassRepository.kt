@@ -17,47 +17,49 @@ class CompassRepository(
         private const val MAXIMUM_ANGLE = 360
     }
 
-    var unitPoints: List<UnitPoint> = listOf()
+    var labelDataList: List<ARLabelData> = listOf()
 
     fun getCompassUpdates(): Flow<CompassData> =
         orientationProvider.getSensorUpdates()
             .combine(locationProvider.getLocationUpdates()) {
                 currentOrientation: OrientationData, currentLocation: LocationData ->
-                val destinations = unitPoints
+                val destinations = labelDataList
                     .map {
                         unitPointToDestination(
-                            it,
+                            it.point,
                             currentLocation,
                             currentOrientation.currentAzimuth
                         )
                     }
+
                 CompassData(
                     currentOrientation,
                     destinations,
                     getMaxDistance(destinations),
                     getMinDistance(destinations),
-                    currentLocation
+                    currentLocation,
+                    labelDataList
                 )
             }
 
 
     private fun unitPointToDestination(
-        unitPoint: UnitPoint,
+        point: Point,
         currentLocation: LocationData,
         currentAzimuth: Float
     ): DestinationData {
-        val headingAngle = calculateHeadingAngle(currentLocation, unitPoint.location)
+        val headingAngle = calculateHeadingAngle(currentLocation, point.location)
         val currentDestinationAzimuth =
             (headingAngle - currentAzimuth + MAXIMUM_ANGLE) % MAXIMUM_ANGLE
         val distanceToDestination = locationProvider.getDistanceBetweenPoints(
             currentLocation,
-            unitPoint.location
+            point.location
         )
         return DestinationData(
             currentDestinationAzimuth,
             distanceToDestination,
-            unitPoint.location,
-            unitPoint
+            point.location,
+            point
         )
     }
 

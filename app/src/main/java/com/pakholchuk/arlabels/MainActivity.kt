@@ -10,23 +10,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.graphics.Color
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.map
-import androidx.ui.tooling.preview.Preview
+import com.pakholchuk.arlabels.ARLabelUtils.adjustLowPassFilterAlphaValue
 import com.pakholchuk.arlabels.databinding.ActivityMainBinding
-import com.pakholchuk.arlabels.ui.ARLabelsTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
 import java.lang.Exception
 const val TAG = "fatal_log"
 
@@ -49,38 +39,54 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(
                 this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
-        val labels = mutableListOf<LabelProperties>()
-        for (i in -10..10) labels.add(
-            LabelProperties(
-                10, i*30, i*50, 50, "this is $i", "label$i"
+//        val labels = mutableListOf<LabelProperties>()
+//        for (i in -10..10) labels.add(
+//            LabelProperties(
+//                10, i*30, i*50, 50, "this is $i", "label$i"
+//            )
+//        )
+        val homePoints = mutableListOf<Point>(
+            Point("1", "House", LocationData(55.696153, 37.325086)),
+            Point("1", "Perekrestok", LocationData(55.694620, 37.331619)),
+            Point("1", "Dixie", LocationData(55.697598, 37.323788)),
+            Point("1", "New 5'ka", LocationData(55.695553, 37.319179)),
+            Point("1", "Old 5'ka", LocationData(55.695278, 37.333144)),
+            Point("1", "Ex-Lenta", LocationData(55.696173, 37.335708)),
+            Point("1", "Skolkovo Station", LocationData(55.699940, 37.342510)),
+            Point("1", "Nik's House", LocationData(55.705159, 37.318376)),
+            Point("1", "SkolTech", LocationData(55.698964, 37.359287)),
+            Point("1", "Post Office", LocationData(55.700725, 37.322044)),
+            Point("1", "Na Rogakh", LocationData(55.695476, 37.324371)),
+            Point("1", "Vkusvill", LocationData(55.696438, 37.323202)),
+            Point("1", "Toilet", LocationData(55.694228, 37.328708)),
+            Point("1", "New Parking", LocationData(55.692683, 37.325444)),
+            Point("1", "Bakovka station", LocationData(55.682830, 37.315526)),
             )
-        )
-        val unitPoints = mutableListOf<UnitPoint>(
-            UnitPoint("1", "House", LocationData(55.696153, 37.325086)),
-            UnitPoint("1", "Perekrestok", LocationData(55.694620, 37.331619)),
-            UnitPoint("1", "Dixie", LocationData(55.697598, 37.323788)),
-            UnitPoint("1", "New 5'ka", LocationData(55.695553, 37.319179)),
-            UnitPoint("1", "Old 5'ka", LocationData(55.695278, 37.333144)),
-            UnitPoint("1", "Ex-Lenta", LocationData(55.696173, 37.335708)),
-            UnitPoint("1", "Skolkovo Station", LocationData(55.699940, 37.342510)),
-            UnitPoint("1", "Nik's House", LocationData(55.705159, 37.318376)),
-            UnitPoint("1", "SkolTech", LocationData(55.698964, 37.359287)),
-            UnitPoint("1", "Post Office", LocationData(55.700725, 37.322044)),
-            UnitPoint("1", "Na Rogakh", LocationData(55.695476, 37.324371)),
-            UnitPoint("1", "Vkusvill", LocationData(55.696438, 37.323202)),
-            UnitPoint("1", "Toilet", LocationData(55.694228, 37.328708)),
-            UnitPoint("1", "New Parking", LocationData(55.692683, 37.325444)),
-            UnitPoint("1", "Bakovka station", LocationData(55.682830, 37.315526)),
+        val jobPoints = mutableListOf(
+            Point("1", "first", LocationData(55.668129, 37.511553)),
+            Point("1", "second", LocationData(55.668123, 37.512063)),
+            Point("1", "third", LocationData(55.668158, 37.513007)),
+            Point("1", "fourth", LocationData(55.667929, 37.513325)),
+            Point("1", "fifth", LocationData(55.667473, 37.513726)),
+            Point("1", "sixth", LocationData(55.667294, 37.512576)),
+            Point("1", "seventh", LocationData(55.667262, 37.511976)),
+            Point("1", "eighth", LocationData(55.667347, 37.511278)),
+            Point("1", "ninth", LocationData(55.667635, 37.511111)),
+            Point("1", "O'K", LocationData(55.666644, 37.514676)),
+            Point("OFFICE", "Office", LocationData(55.667638, 37.511648)),
+            Point("M", "Метро Пр.Вернадского", LocationData(55.676132, 37.505141)),
 
             )
 
-        viewModel.setUnitPoints(unitPoints)
+        viewModel.setARLabelData(jobPoints.map { ARLabelData(it) })
         viewModel.getUpdates()
 
         binding.compose.setContent {
-            val labelsState = viewModel.compassUpdate.map {
-                ARLabelUtils.prepareLabelsProperties(it, binding.viewFinder.measuredWidth, binding.viewFinder.measuredHeight)
+            val labelsState = viewModel.compassUpdate.map { compassData ->
+                ARLabelUtils.prepareLabelsProperties(compassData, binding.viewFinder.width, binding.viewFinder.height)
             }.observeAsState(initial = listOf())
+            labelsState.value.find { it.positionX > 0 && it.positionX < binding.viewFinder.width }
+                ?.let { viewModel.setLowPassFilterAlpha(adjustLowPassFilterAlphaValue(it.positionX.toFloat(), binding.viewFinder.width)) }
 
             Labels(labels = labelsState.value, onLabelClick = ::onLabelClick)
 //            Labels(labels = labels, onLabelClick = ::onLabelClick)
@@ -88,17 +94,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun onLabelClick(id: String) {
-        Toast.makeText(this, id, Toast.LENGTH_SHORT).show()
+    fun onLabelClick(pointId: String) {
+        Toast.makeText(this, pointId, Toast.LENGTH_SHORT).show()
     }
-
-    fun labelsFlow() = callbackFlow<List<LabelProperties>> {
-        viewModel.compassUpdate.map {
-            ARLabelUtils.prepareLabelsProperties(it, binding.viewFinder.measuredWidth, binding.viewFinder.measuredHeight)
-        }.observe(this@MainActivity, {
-
-        })
-    }
+//
+//    fun labelsFlow() = callbackFlow<List<LabelProperties>> {
+//        viewModel.compassUpdate.map {
+//            ARLabelUtils.prepareLabelsProperties(it, binding.viewFinder.measuredWidth, binding.viewFinder.measuredHeight)
+//        }.observe(this@MainActivity, {
+//
+//        })
+//    }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(

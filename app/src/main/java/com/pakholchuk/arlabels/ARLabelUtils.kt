@@ -1,8 +1,5 @@
 package com.pakholchuk.arlabels
 
-import android.animation.PropertyValuesHolder
-import android.animation.ValueAnimator
-import android.view.animation.AccelerateInterpolator
 import kotlin.math.roundToInt
 
 @Suppress("MagicNumber")
@@ -102,8 +99,11 @@ import kotlin.math.roundToInt
                         compassData.minDistance,
                         destinationData.distanceToDestination
                     ),
-                    unitId = destinationData.destinationUnit.id,
-                    title = "${destinationData.destinationUnit.name} \n ${destinationData.distanceToDestination} m"
+                    pointID = destinationData.destinationPoint.id,
+                    title = destinationData.destinationPoint.title,
+                    additionalProperties = compassData.labelDataList.find {
+                        it.point.id == destinationData.destinationPoint.id
+                    }?.additionalLabelProperties
                 )
             }
     }
