@@ -3,7 +3,7 @@ package com.pakholchuk.arlabels
 import kotlin.math.roundToInt
 
 @Suppress("MagicNumber")
- object ARLabelUtils {
+object ARLabelUtils {
 
     private const val MAX_HORIZONTAL_ANGLE_VARIATION = 30f
     private const val MAX_VERTICAL_PITCH_VARIATION = 60f
@@ -92,8 +92,14 @@ import kotlin.math.roundToInt
             .map { destinationData ->
                 LabelProperties(
                     destinationData.distanceToDestination,
-                    calculatePositionX(destinationData.currentDestinationAzimuth, viewWidth).toInt(),
-                    calculatePositionY(compassData.orientationData.currentPitch, viewHeight).toInt(),
+                    calculatePositionX(
+                        destinationData.currentDestinationAzimuth,
+                        viewWidth
+                    ).toInt(),
+                    calculatePositionY(
+                        compassData.orientationData.currentPitch,
+                        viewHeight
+                    ).toInt(),
                     getAlphaValue(
                         compassData.maxDistance,
                         compassData.minDistance,

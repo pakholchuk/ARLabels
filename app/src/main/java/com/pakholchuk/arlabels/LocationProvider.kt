@@ -1,22 +1,15 @@
 package com.pakholchuk.arlabels
 
 import android.annotation.SuppressLint
-import android.app.Application
-import android.content.Context
 import android.location.Location
 import com.google.android.gms.location.LocationRequest
 import com.patloew.colocation.CoLocation
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlin.math.roundToInt
 
 @SuppressLint("MissingPermission")
-class LocationProvider(private val coLocation: CoLocation){
+class LocationProvider(private val coLocation: CoLocation) {
     companion object {
         private const val LOCATION_REQUEST_INTERVAL = 5000L
         private const val FASTEST_REQUEST_INTERVAL = 20L
@@ -30,8 +23,10 @@ class LocationProvider(private val coLocation: CoLocation){
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
-    fun getDistanceBetweenPoints(currentLocation: LocationData?,
-                                 destinationLocation: LocationData?): Int {
+    fun getDistanceBetweenPoints(
+        currentLocation: LocationData?,
+        destinationLocation: LocationData?
+    ): Int {
         val locationA = Location("A")
         locationA.latitude = currentLocation?.latitude ?: 0.0
         locationA.longitude = currentLocation?.longitude ?: 0.0

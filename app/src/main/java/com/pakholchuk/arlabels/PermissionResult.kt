@@ -1,4 +1,4 @@
-package com.netguru.arlocalizerview
+package com.pakholchuk.arlabels
 
 enum class PermissionResult {
     GRANTED,

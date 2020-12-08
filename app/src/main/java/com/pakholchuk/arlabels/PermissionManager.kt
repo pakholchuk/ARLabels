@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.netguru.arlocalizerview.PermissionResult
 
 class PermissionManager(private val activity: Activity) {
 
@@ -14,7 +13,6 @@ class PermissionManager(private val activity: Activity) {
     }
 
     fun requestAllPermissions() {
-
         ActivityCompat.requestPermissions(
             activity, arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,

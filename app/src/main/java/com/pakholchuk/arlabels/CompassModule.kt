@@ -1,10 +1,8 @@
 package com.pakholchuk.arlabels
 
-import android.content.Context
 import android.hardware.SensorManager
 import android.view.WindowManager
 import androidx.core.content.getSystemService
-import com.pakholchuk.arlabels.*
 import com.patloew.colocation.CoLocation
 import dagger.Binds
 import dagger.Module
@@ -26,8 +24,8 @@ internal abstract class CompassModule {
         }
 
         @Provides
-        fun providesCoLocation(arLabelsDependencyProvider: ARLabelsDependencyProvider)
-            = CoLocation.from(arLabelsDependencyProvider.getSensorsContext())
+        fun providesCoLocation(arLabelsDependencyProvider: ARLabelsDependencyProvider) =
+            CoLocation.from(arLabelsDependencyProvider.getSensorsContext())
 
 
         @JvmStatic
@@ -46,12 +44,16 @@ internal abstract class CompassModule {
         @JvmStatic
         @Provides
         internal fun provideSensorManager(arLabelsDependencyProvider: ARLabelsDependencyProvider) =
-            requireNotNull(arLabelsDependencyProvider.getSensorsContext().getSystemService<SensorManager>())
+            requireNotNull(
+                arLabelsDependencyProvider.getSensorsContext().getSystemService<SensorManager>()
+            )
 
 
         @JvmStatic
         @Provides
         internal fun providesWindowManager(arLabelsDependencyProvider: ARLabelsDependencyProvider) =
-            requireNotNull(arLabelsDependencyProvider.getSensorsContext().getSystemService<WindowManager>())
+            requireNotNull(
+                arLabelsDependencyProvider.getSensorsContext().getSystemService<WindowManager>()
+            )
     }
 }

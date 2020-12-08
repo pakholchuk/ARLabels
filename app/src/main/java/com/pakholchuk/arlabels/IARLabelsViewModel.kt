@@ -2,7 +2,6 @@ package com.pakholchuk.arlabels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.netguru.arlocalizerview.PermissionResult
 import kotlinx.coroutines.Job
 
 interface IARLabelsViewModel {

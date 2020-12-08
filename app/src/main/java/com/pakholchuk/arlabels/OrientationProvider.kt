@@ -9,7 +9,9 @@ import android.view.Surface
 import android.view.WindowManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.mapLatest
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -32,7 +34,7 @@ class OrientationProvider(
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
                 when (sensor?.type) {
                     Sensor.TYPE_ROTATION_VECTOR -> when (accuracy) {
-                        SensorManager.SENSOR_STATUS_ACCURACY_LOW -> Log.d(TAG,"ACCURACY low")
+                        SensorManager.SENSOR_STATUS_ACCURACY_LOW -> Log.d(TAG, "ACCURACY low")
                         SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM -> Log.d(TAG, "ACCURACY medium")
                         SensorManager.SENSOR_STATUS_ACCURACY_HIGH -> Log.d(TAG, "ACCURACY high")
                         else -> Unit
@@ -51,7 +53,6 @@ class OrientationProvider(
 
     fun getSensorUpdates(): Flow<OrientationData> =
         sensorEventsFlow().mapLatest { handleSensorEvent(it) }
-
 
     private fun handleSensorEvent(sensorEvent: SensorEvent): OrientationData {
         val rotationMatrix = FloatArray(9)

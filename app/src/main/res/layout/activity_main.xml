@@ -3,24 +3,25 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <com.pakholchuk.arlabels.ARLabelsView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/labelsView"/>
-<!--    <FrameLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:id="@+id/localizer"-->
-<!--        >-->
-<!--        <androidx.camera.view.PreviewView-->
-<!--            android:id="@+id/view_finder"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent" />-->
+        android:id="@+id/labelsView" />
+    <!--    <FrameLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:id="@+id/localizer"-->
+    <!--        >-->
+    <!--        <androidx.camera.view.PreviewView-->
+    <!--            android:id="@+id/view_finder"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent" />-->
 
-<!--        <androidx.compose.ui.platform.ComposeView-->
-<!--            android:id="@+id/compose"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            />-->
-<!--    </FrameLayout>-->
+    <!--        <androidx.compose.ui.platform.ComposeView-->
+    <!--            android:id="@+id/compose"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent"-->
+    <!--            />-->
+    <!--    </FrameLayout>-->
 </FrameLayout>

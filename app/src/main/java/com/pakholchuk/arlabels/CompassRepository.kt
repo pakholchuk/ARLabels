@@ -22,11 +22,10 @@ class CompassRepository @Inject constructor(
 
     fun getCompassUpdates(): Flow<CompassData> =
         orientationProvider.getSensorUpdates()
-            .combine(locationProvider.getLocationUpdates()) {
-                currentOrientation: OrientationData, currentLocation: LocationData ->
+            .combine(locationProvider.getLocationUpdates()) { currentOrientation: OrientationData, currentLocation: LocationData ->
                 val destinations = labelDataList
                     .map {
-                        unitPointToDestination(
+                        pointToDestination(
                             it.point,
                             currentLocation,
                             currentOrientation.currentAzimuth
@@ -43,8 +42,7 @@ class CompassRepository @Inject constructor(
                 )
             }
 
-
-    private fun unitPointToDestination(
+    private fun pointToDestination(
         point: Point,
         currentLocation: LocationData,
         currentAzimuth: Float
@@ -64,10 +62,14 @@ class CompassRepository @Inject constructor(
         )
     }
 
-    private fun calculateHeadingAngle(currentLocation: LocationData, destinationLocation: LocationData): Float {
+    private fun calculateHeadingAngle(
+        currentLocation: LocationData,
+        destinationLocation: LocationData
+    ): Float {
         val currentLatitudeRadians = Math.toRadians(currentLocation.latitude)
         val destinationLatitudeRadians = Math.toRadians(destinationLocation.latitude)
-        val deltaLongitude = Math.toRadians(destinationLocation.longitude - currentLocation.longitude)
+        val deltaLongitude =
+            Math.toRadians(destinationLocation.longitude - currentLocation.longitude)
 
         val y = cos(currentLatitudeRadians) * sin(destinationLatitudeRadians) -
                 sin(currentLatitudeRadians) * cos(destinationLatitudeRadians) * cos(deltaLongitude)

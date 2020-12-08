@@ -1,26 +1,30 @@
 package com.pakholchuk.arlabels
 
+//import dagger.hilt.android.AndroidEntryPoint
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.CameraSelector
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.core.app.ActivityCompat
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.map
-import com.pakholchuk.arlabels.ARLabelUtils.adjustLowPassFilterAlphaValue
 import com.pakholchuk.arlabels.databinding.ActivityMainBinding
-//import dagger.hilt.android.AndroidEntryPoint
-import java.lang.Exception
+import com.pakholchuk.arlabels.ui.purple200
+
 const val TAG = "fatal_log"
 
 //@AndroidEntryPoint
@@ -29,7 +33,11 @@ class MainActivity : AppCompatActivity() {
     private val viewModel by viewModels<ARLabelsViewModel>()
 
     private val REQUEST_CODE_PERMISSIONS = 10
-    private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
+    private val REQUIRED_PERMISSIONS = arrayOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +72,7 @@ class MainActivity : AppCompatActivity() {
             Point("1", "Toilet", LocationData(55.694228, 37.328708)),
             Point("1", "New Parking", LocationData(55.692683, 37.325444)),
             Point("1", "Bakovka station", LocationData(55.682830, 37.315526)),
-            )
+        )
         val jobPoints = mutableListOf(
             Point("1", "first", LocationData(55.668129, 37.511553)),
             Point("1", "second", LocationData(55.668123, 37.512063)),
@@ -100,7 +108,8 @@ class MainActivity : AppCompatActivity() {
         })
         binding.labelsView.setUpLabelsView(
             labelsDataList = jobPoints.map { ARLabelData(it) },
-            onLabelClick = ::onLabelClick
+            onLabelClick = ::onLabelClick,
+//            label = { props, modifier -> Label(props, modifier) }
         )
 //        binding.compose.setContent {
 //            val labelsState = viewModel.compassUpdate.map { compassData ->
@@ -113,6 +122,25 @@ class MainActivity : AppCompatActivity() {
 ////            Labels(labels = labels, onLabelClick = ::onLabelClick)
 //        }
 
+    }
+
+
+    @Composable
+    fun Label(arLabelProperties: LabelProperties, modifier: Modifier = Modifier) {
+        Surface(
+            color = Color.Black,
+            shape = RoundedCornerShape(4.dp),
+            border = BorderStroke(2.dp, purple200),
+            modifier = modifier
+        ) {
+            Column {
+                Text(
+                    modifier = Modifier.padding(4.dp).align(Alignment.CenterHorizontally),
+                    text = arLabelProperties.title,
+                    color = Color.Yellow
+                )
+            }
+        }
     }
 
     fun onLabelClick(pointId: String) {
@@ -138,7 +166,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
-            baseContext, it) == PackageManager.PERMISSION_GRANTED
+            baseContext, it
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
 //    private fun startCamera() {

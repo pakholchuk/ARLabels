@@ -17,8 +17,8 @@ data class Point(
 )
 
 data class LocationData(
-        val latitude: Double,
-        val longitude: Double
+    val latitude: Double,
+    val longitude: Double
 )
 
 data class OrientationData(val currentAzimuth: Float, val currentPitch: Float)

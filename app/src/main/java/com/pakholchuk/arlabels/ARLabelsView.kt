@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.FrameLayout
 import androidx.camera.core.CameraSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -12,12 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.*
-import com.netguru.arlocalizerview.PermissionResult
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.Observer
+import androidx.lifecycle.map
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.pakholchuk.arlabels.databinding.ArLabelsLayoutBinding
-import java.lang.Exception
 
 
 @Suppress("UnusedPrivateMember", "TooManyFunctions")
@@ -37,6 +36,7 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
     init {
         //        View.inflate(context, R.layout.ar_labels_layout, this)
     }
+
     private lateinit var viewModel: IARLabelsViewModel
     private lateinit var arLabelsComponent: ARLabelsComponent
 
@@ -59,7 +59,7 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
     fun setUpLabelsView(
         labelsDataList: List<ARLabelData>,
         onLabelClick: ((pointId: String) -> Unit)? = null,
-        label: @Composable ((LabelProperties, Modifier) -> Unit)? = null
+        label: @Composable ((labelProperties: LabelProperties, modifier: Modifier) -> Unit)? = null
     ) {
         viewModel.setARLabelData(labelsDataList)
         this.onLabelClick = onLabelClick
@@ -83,10 +83,8 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
     }
 
 
-
     private fun startCamera() {
-        val cameraProviderFuture
-                = ProcessCameraProvider.getInstance(context)
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         cameraProviderFuture.addListener(Runnable {
             val cameraProvider = cameraProviderFuture.get()
             val preview = androidx.camera.core.Preview.Builder()
@@ -110,15 +108,21 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
     private fun observeCompassState() {
         binding.compose.setContent {
             val labelsState = viewModel.compassUpdate.map { compassData ->
-                ARLabelUtils.prepareLabelsProperties(compassData, binding.viewFinder.width, binding.viewFinder.height)
+                ARLabelUtils.prepareLabelsProperties(
+                    compassData,
+                    binding.viewFinder.width,
+                    binding.viewFinder.height
+                )
             }.observeAsState(initial = listOf())
             labelsState.value.find { it.positionX > 0 && it.positionX < binding.viewFinder.width }
-                ?.let { viewModel.setLowPassFilterAlpha(
-                    ARLabelUtils.adjustLowPassFilterAlphaValue(
-                        it.positionX.toFloat(),
-                        binding.viewFinder.width
+                ?.let {
+                    viewModel.setLowPassFilterAlpha(
+                        ARLabelUtils.adjustLowPassFilterAlphaValue(
+                            it.positionX.toFloat(),
+                            binding.viewFinder.width
+                        )
                     )
-                ) }
+                }
 
             Labels(labels = labelsState.value, onLabelClick = onLabelClick, label = label)
 //            Labels(labels = labels, onLabelClick = ::onLabelClick)

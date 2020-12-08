@@ -3,9 +3,11 @@ package com.pakholchuk.arlabels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +18,6 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
-import com.pakholchuk.arlabels.ui.purple200
 
 @Composable
 fun Labels(
@@ -39,7 +40,7 @@ fun Labels(
             label(
                 it,
                 Modifier
-                    .centerCoordinates(it.positionX.toInt(), it.positionY.toInt())
+                    .centerCoordinates(it.positionX, it.positionY)
                     .clickable(onClick = { onLabelClick?.let { onLabelClick -> onLabelClick(it.pointID) } })
             )
 
@@ -47,11 +48,10 @@ fun Labels(
     }
 }
 
-fun Modifier.centerCoordinates(x: Int, y: Int)
-        = Modifier.layout { measurable, constraints ->
+fun Modifier.centerCoordinates(x: Int, y: Int) = Modifier.layout { measurable, constraints ->
     val placeable = measurable.measure(constraints)
-    val placeableX = x - placeable.width/2
-    val placeableY = y - placeable.height/2
+    val placeableX = x - placeable.width / 2
+    val placeableY = y - placeable.height / 2
     layout(placeable.width, placeable.height) {
         placeable.place(placeableX, placeableY)
     }
@@ -62,7 +62,7 @@ fun Label(arLabelProperties: LabelProperties, modifier: Modifier = Modifier) {
     Surface(
         color = Color.getTransparentColor(arLabelProperties.alpha.toFloat(), Color.White),
         shape = RoundedCornerShape(4.dp),
-        border = BorderStroke(2.dp, purple200),
+        border = BorderStroke(1.dp, Color.Black),
         modifier = modifier
     ) {
         Column {
@@ -80,7 +80,7 @@ fun Label(arLabelProperties: LabelProperties, modifier: Modifier = Modifier) {
 }
 
 private fun Color.Companion.getTransparentColor(alpha: Float, color: Color): Color {
-    return Color(color.red, color.green, color.blue, alpha/256)
+    return Color(color.red, color.green, color.blue, alpha / 256)
 }
 
 @Preview(showBackground = true)
@@ -89,17 +89,17 @@ fun DefaultPreview() {
     val labels = mutableListOf<LabelProperties>()
     for (i in 0..10) labels.add(
         LabelProperties(
-            100, i*30, i*50, 50, "this is long title $i", "label$i"
+            100, i * 30, i * 50, 50, "this is long title $i", "label$i"
         )
     )
-
-    Labels(labels = labels, onLabelClick = {})
+    Labels(labels = labels)
 
 }
+
 @Preview
 @Composable
-fun PreviewLabel(){
-    Box(modifier = Modifier.fillMaxSize()){
+fun PreviewLabel() {
+    Box(modifier = Modifier.fillMaxSize()) {
         Text(text = "SFSF", modifier = Modifier.centerCoordinates(100, 200))
     }
 }
