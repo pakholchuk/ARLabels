@@ -2,9 +2,9 @@ package com.pakholchuk.arlabels
 
 import android.app.Application
 import android.content.Context
-import dagger.hilt.android.HiltAndroidApp
+//import dagger.hilt.android.HiltAndroidApp
 
-@HiltAndroidApp
+//@HiltAndroidApp
 class App: Application() {
 
     companion object {

@@ -1,18 +1,20 @@
-package com.netguru.arlocalizerview
+package com.pakholchuk.arlabels
 
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.netguru.arlocalizerview.PermissionResult
 
-internal class PermissionManager(private val activity: Activity) {
+class PermissionManager(private val activity: Activity) {
 
     companion object {
         private const val ESSENTIAL_PERMISSIONS_REQUEST_CODE = 123
     }
 
     fun requestAllPermissions() {
+
         ActivityCompat.requestPermissions(
             activity, arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,

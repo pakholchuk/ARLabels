@@ -8,12 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-<!--    <com.netguru.arlocalizerview.arview.ARLabelView-->
-<!--        android:id="@+id/ar_label_view"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:background="@android:color/transparent"/>-->
-
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/compose"
         android:layout_width="match_parent"

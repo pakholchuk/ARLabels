@@ -2,6 +2,8 @@ package com.pakholchuk.arlabels
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -13,17 +15,18 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.map
 import com.pakholchuk.arlabels.ARLabelUtils.adjustLowPassFilterAlphaValue
 import com.pakholchuk.arlabels.databinding.ActivityMainBinding
-import dagger.hilt.android.AndroidEntryPoint
+//import dagger.hilt.android.AndroidEntryPoint
 import java.lang.Exception
 const val TAG = "fatal_log"
 
-@AndroidEntryPoint
+//@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val viewModel by viewModels<MainViewModel>()
+    private val viewModel by viewModels<ARLabelsViewModel>()
 
     private val REQUEST_CODE_PERMISSIONS = 10
     private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -33,12 +36,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (allPermissionsGranted()) {
-            startCamera()
-        } else {
-            ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
-        }
+//        if (allPermissionsGranted()) {
+//            startCamera()
+//        } else {
+//            ActivityCompat.requestPermissions(
+//                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+//        }
 //        val labels = mutableListOf<LabelProperties>()
 //        for (i in -10..10) labels.add(
 //            LabelProperties(
@@ -78,26 +81,45 @@ class MainActivity : AppCompatActivity() {
 
             )
 
-        viewModel.setARLabelData(jobPoints.map { ARLabelData(it) })
-        viewModel.getUpdates()
+//        viewModel.setARLabelData(jobPoints.map { ARLabelData(it) })
+//
+//        viewModel.getUpdates()
 
-        binding.compose.setContent {
-            val labelsState = viewModel.compassUpdate.map { compassData ->
-                ARLabelUtils.prepareLabelsProperties(compassData, binding.viewFinder.width, binding.viewFinder.height)
-            }.observeAsState(initial = listOf())
-            labelsState.value.find { it.positionX > 0 && it.positionX < binding.viewFinder.width }
-                ?.let { viewModel.setLowPassFilterAlpha(adjustLowPassFilterAlphaValue(it.positionX.toFloat(), binding.viewFinder.width)) }
+        binding.labelsView.onCreate(object : ARLabelsDependencyProvider {
+            override fun getSensorsContext(): Context {
+                return this@MainActivity
+            }
 
-            Labels(labels = labelsState.value, onLabelClick = ::onLabelClick)
-//            Labels(labels = labels, onLabelClick = ::onLabelClick)
-        }
+            override fun getARViewLifecycleOwner(): LifecycleOwner {
+                return this@MainActivity
+            }
+
+            override fun getPermissionActivity(): Activity {
+                return this@MainActivity
+            }
+        })
+        binding.labelsView.setUpLabelsView(
+            labelsDataList = jobPoints.map { ARLabelData(it) },
+            onLabelClick = ::onLabelClick
+        )
+//        binding.compose.setContent {
+//            val labelsState = viewModel.compassUpdate.map { compassData ->
+//                ARLabelUtils.prepareLabelsProperties(compassData, binding.viewFinder.width, binding.viewFinder.height)
+//            }.observeAsState(initial = listOf())
+//            labelsState.value.find { it.positionX > 0 && it.positionX < binding.viewFinder.width }
+//                ?.let { viewModel.setLowPassFilterAlpha(adjustLowPassFilterAlphaValue(it.positionX.toFloat(), binding.viewFinder.width)) }
+//
+//            Labels(labels = labelsState.value, onLabelClick = ::onLabelClick)
+////            Labels(labels = labels, onLabelClick = ::onLabelClick)
+//        }
 
     }
 
     fun onLabelClick(pointId: String) {
         Toast.makeText(this, pointId, Toast.LENGTH_SHORT).show()
     }
-//
+
+    //
 //    fun labelsFlow() = callbackFlow<List<LabelProperties>> {
 //        viewModel.compassUpdate.map {
 //            ARLabelUtils.prepareLabelsProperties(it, binding.viewFinder.measuredWidth, binding.viewFinder.measuredHeight)
@@ -105,48 +127,56 @@ class MainActivity : AppCompatActivity() {
 //
 //        })
 //    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        binding.labelsView.onRequestPermissionResult(requestCode, permissions, grantResults)
+    }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
             baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun startCamera() {
-        val cameraProviderFuture
-                = ProcessCameraProvider.getInstance(this)
-        cameraProviderFuture.addListener(Runnable {
-            val cameraProvider = cameraProviderFuture.get()
-            val preview = androidx.camera.core.Preview.Builder()
-                .build()
-                .also { it.setSurfaceProvider(binding.viewFinder.surfaceProvider) }
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+//    private fun startCamera() {
+//        val cameraProviderFuture
+//                = ProcessCameraProvider.getInstance(this)
+//        cameraProviderFuture.addListener(Runnable {
+//            val cameraProvider = cameraProviderFuture.get()
+//            val preview = androidx.camera.core.Preview.Builder()
+//                .build()
+//                .also { it.setSurfaceProvider(binding.viewFinder.surfaceProvider) }
+//            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+//
+//            try {
+//                cameraProvider.unbindAll()
+//                cameraProvider.bindToLifecycle(
+//                    this, cameraSelector, preview
+//                )
+//            } catch (e: Exception) {
+//                Log.e("TAG", "Use case binding failed", e)
+//            }
+//        }, ContextCompat.getMainExecutor(this))
+//    }
 
-            try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview
-                )
-            } catch (e: Exception) {
-                Log.e("TAG", "Use case binding failed", e)
-            }
-        }, ContextCompat.getMainExecutor(this))
-    }
-
-    @SuppressLint("MissingSuperCall")
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults:
-        IntArray) {
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
-                startCamera()
-            } else {
-                Toast.makeText(this,
-                    "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT).show()
-                finish()
-            }
-        }
-    }
+//    @SuppressLint("MissingSuperCall")
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int, permissions: Array<String>, grantResults:
+//        IntArray) {
+//        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+//            if (allPermissionsGranted()) {
+//                startCamera()
+//            } else {
+//                Toast.makeText(this,
+//                    "Permissions not granted by the user.",
+//                    Toast.LENGTH_SHORT).show()
+//                finish()
+//            }
+//        }
+//    }
 }
 //
 //@Preview(showBackground = true)

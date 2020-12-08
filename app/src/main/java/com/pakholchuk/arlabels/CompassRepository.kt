@@ -3,12 +3,13 @@ package com.pakholchuk.arlabels
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import javax.inject.Inject
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
 @ExperimentalCoroutinesApi
-class CompassRepository(
+class CompassRepository @Inject constructor(
     private val orientationProvider: OrientationProvider,
     private val locationProvider: LocationProvider
 ) {

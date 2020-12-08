@@ -22,7 +22,7 @@ import com.pakholchuk.arlabels.ui.purple200
 fun Labels(
     labels: List<LabelProperties>,
     modifier: Modifier = Modifier,
-    onLabelClick: (unitId: String) -> Unit,
+    onLabelClick: ((unitId: String) -> Unit)? = null,
     label: @Composable ((LabelProperties, Modifier) -> Unit)? = null
 ) {
     Box(modifier = modifier.fillMaxSize().background(Color.Transparent)) {
@@ -32,11 +32,17 @@ fun Labels(
                     arLabelProperties = it,
                     Modifier
                         .centerCoordinates(it.positionX.toInt(), it.positionY.toInt())
-                        .clickable(onClick = { onLabelClick(it.pointID) })
+                        .clickable(onClick = { onLabelClick?.let { onLabelClick -> onLabelClick(it.pointID) } })
                 )
             }
         else labels.forEach {
-            label(it, Modifier)
+            label(
+                it,
+                Modifier
+                    .centerCoordinates(it.positionX.toInt(), it.positionY.toInt())
+                    .clickable(onClick = { onLabelClick?.let { onLabelClick -> onLabelClick(it.pointID) } })
+            )
+
         }
     }
 }
