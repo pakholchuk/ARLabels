@@ -9,7 +9,7 @@ group='com.github.pakholchuk'
 
 def camerax_version = "1.0.0-beta12"
 def dagger_version = "2.29.1"
-def compose_version = '1.0.0-alpha08'
+def compose_version = '1.0.0-alpha07'
 def kotlin_version = "1.4.20"
 
 android {
