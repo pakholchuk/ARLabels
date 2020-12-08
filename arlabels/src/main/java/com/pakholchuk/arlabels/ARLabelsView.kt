@@ -16,7 +16,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.map
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.pakholchuk.arlabels.data.PermissionResult
 import com.pakholchuk.arlabels.databinding.ArLabelsLayoutBinding
+import com.pakholchuk.arlabels.di.ARLabelsComponent
+import com.pakholchuk.arlabels.di.ARLabelsDependencyProvider
+import com.pakholchuk.arlabels.utils.ARLabelUtils
+import com.pakholchuk.arlabels.utils.ARLabelUtils.TAG
 
 
 @Suppress("UnusedPrivateMember", "TooManyFunctions")
@@ -33,19 +38,11 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
     private val binding: ArLabelsLayoutBinding =
         ArLabelsLayoutBinding.inflate(LayoutInflater.from(context), this)
 
-    init {
-        //        View.inflate(context, R.layout.ar_labels_layout, this)
-    }
-
     private lateinit var viewModel: IARLabelsViewModel
     private lateinit var arLabelsComponent: ARLabelsComponent
 
     private var onLabelClick: ((pointId: String) -> Unit)? = null
     private var label: @Composable ((LabelProperties, Modifier) -> Unit)? = null
-
-    companion object {
-        private const val SAVED_STATE = "saved_state"
-    }
 
     fun onCreate(arLabelsDependencyProvider: ARLabelsDependencyProvider) {
         arLabelsComponent =
@@ -82,7 +79,6 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
         viewModel.checkPermissions()
     }
 
-
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         cameraProviderFuture.addListener(Runnable {
@@ -99,11 +95,10 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
                     cameraSelector, preview
                 )
             } catch (e: Exception) {
-                Log.e("TAG", "Use case binding failed", e)
+                Log.e(TAG, "Use case binding failed", e)
             }
         }, ContextCompat.getMainExecutor(context))
     }
-
 
     private fun observeCompassState() {
         binding.compose.setContent {
@@ -123,23 +118,10 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
                         )
                     )
                 }
-
             Labels(labels = labelsState.value, onLabelClick = onLabelClick, label = label)
-//            Labels(labels = labels, onLabelClick = ::onLabelClick)
         }
         viewModel.getUpdates()
 
-//        ar_label_view.setLowPassFilterAlphaListener {
-//            viewModel.setLowPassFilterAlpha(it)
-//        }
-//        viewModel.compassState().observe(
-//            arLabelsComponent.arLabelsDependencyProvider().getARViewLifecycleOwner(),
-//            Observer { viewState ->
-//                when (viewState) {
-//                    is ViewState.Success<CompassData> -> handleSuccessData(viewState.data)
-//                    is ViewState.Error -> showErrorDialog(viewState.message)
-//                }
-//            })
     }
 
     private fun showErrorDialog(message: String) {

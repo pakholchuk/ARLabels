@@ -1,4 +1,4 @@
-package com.pakholchuk.arlabels
+package com.pakholchuk.arlabels.data
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -7,6 +7,8 @@ import android.hardware.SensorManager
 import android.util.Log
 import android.view.Surface
 import android.view.WindowManager
+import com.pakholchuk.arlabels.OrientationData
+import com.pakholchuk.arlabels.utils.ARLabelUtils.TAG
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +19,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @ExperimentalCoroutinesApi
-class OrientationProvider(
+internal class OrientationProvider(
     private val sensorManager: SensorManager,
     private val windowManager: WindowManager
 ) {

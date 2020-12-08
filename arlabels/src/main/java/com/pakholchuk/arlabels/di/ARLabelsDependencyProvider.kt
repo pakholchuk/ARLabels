@@ -1,4 +1,4 @@
-package com.pakholchuk.arlabels
+package com.pakholchuk.arlabels.di
 
 import android.app.Activity
 import android.content.Context

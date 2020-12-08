@@ -1,9 +1,13 @@
-package com.pakholchuk.arlabels
+package com.pakholchuk.arlabels.utils
 
+import com.pakholchuk.arlabels.CompassData
+import com.pakholchuk.arlabels.LabelProperties
 import kotlin.math.roundToInt
 
 @Suppress("MagicNumber")
 object ARLabelUtils {
+
+    const val TAG = "===ARLabels==="
 
     private const val MAX_HORIZONTAL_ANGLE_VARIATION = 30f
     private const val MAX_VERTICAL_PITCH_VARIATION = 60f

@@ -1,4 +1,4 @@
-ARLabels - put labels on Camera Preview screen, depends on location.
+ARLabels - put your location-dependent customizable labels onto CameraView.
 Based on ArLocalizerView library - https://github.com/netguru/ar-localizer-view-android
 
 ## License

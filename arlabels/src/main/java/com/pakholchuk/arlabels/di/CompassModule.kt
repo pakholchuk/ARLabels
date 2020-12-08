@@ -1,8 +1,12 @@
-package com.pakholchuk.arlabels
+package com.pakholchuk.arlabels.di
 
 import android.hardware.SensorManager
 import android.view.WindowManager
 import androidx.core.content.getSystemService
+import com.pakholchuk.arlabels.*
+import com.pakholchuk.arlabels.data.LocationProvider
+import com.pakholchuk.arlabels.data.OrientationProvider
+import com.pakholchuk.arlabels.data.PermissionManager
 import com.patloew.colocation.CoLocation
 import dagger.Binds
 import dagger.Module

@@ -1,15 +1,16 @@
-package com.pakholchuk.arlabels
+package com.pakholchuk.arlabels.data
 
 import android.annotation.SuppressLint
 import android.location.Location
 import com.google.android.gms.location.LocationRequest
+import com.pakholchuk.arlabels.LocationData
 import com.patloew.colocation.CoLocation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.math.roundToInt
 
 @SuppressLint("MissingPermission")
-class LocationProvider(private val coLocation: CoLocation) {
+internal class LocationProvider(private val coLocation: CoLocation) {
     companion object {
         private const val LOCATION_REQUEST_INTERVAL = 5000L
         private const val FASTEST_REQUEST_INTERVAL = 20L

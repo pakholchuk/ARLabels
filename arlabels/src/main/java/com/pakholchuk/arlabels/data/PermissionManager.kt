@@ -1,4 +1,4 @@
-package com.pakholchuk.arlabels
+package com.pakholchuk.arlabels.data
 
 import android.Manifest
 import android.app.Activity
@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-class PermissionManager(private val activity: Activity) {
+internal class PermissionManager(private val activity: Activity) {
 
     companion object {
         private const val ESSENTIAL_PERMISSIONS_REQUEST_CODE = 123

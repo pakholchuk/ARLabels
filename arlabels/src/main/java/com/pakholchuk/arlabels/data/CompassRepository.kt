@@ -1,5 +1,6 @@
-package com.pakholchuk.arlabels
+package com.pakholchuk.arlabels.data
 
+import com.pakholchuk.arlabels.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -9,7 +10,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @ExperimentalCoroutinesApi
-class CompassRepository @Inject constructor(
+internal class CompassRepository @Inject constructor(
     private val orientationProvider: OrientationProvider,
     private val locationProvider: LocationProvider
 ) {

@@ -4,13 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pakholchuk.arlabels.data.CompassRepository
+import com.pakholchuk.arlabels.data.PermissionManager
+import com.pakholchuk.arlabels.data.PermissionResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-class ARLabelsViewModel @Inject constructor(
+internal class ARLabelsViewModel @Inject constructor(
     private val repository: CompassRepository,
     private val permissionManager: PermissionManager
 ) : ViewModel(), IARLabelsViewModel {

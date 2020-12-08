@@ -2,9 +2,10 @@ package com.pakholchuk.arlabels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.pakholchuk.arlabels.data.PermissionResult
 import kotlinx.coroutines.Job
 
-interface IARLabelsViewModel {
+internal interface IARLabelsViewModel {
     val permissionState: MutableLiveData<PermissionResult>
     val _compassUpdate: MutableLiveData<CompassData>
     val compassUpdate: LiveData<CompassData>
