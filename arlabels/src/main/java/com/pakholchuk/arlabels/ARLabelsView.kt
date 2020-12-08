@@ -20,6 +20,7 @@ import com.pakholchuk.arlabels.data.PermissionResult
 import com.pakholchuk.arlabels.databinding.ArLabelsLayoutBinding
 import com.pakholchuk.arlabels.di.ARLabelsComponent
 import com.pakholchuk.arlabels.di.ARLabelsDependencyProvider
+import com.pakholchuk.arlabels.di.DaggerARLabelsComponent
 import com.pakholchuk.arlabels.utils.ARLabelUtils
 import com.pakholchuk.arlabels.utils.ARLabelUtils.TAG
 
