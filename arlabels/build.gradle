@@ -32,11 +32,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '1.8'
         useIR = true
     }
 
@@ -45,7 +45,7 @@ android {
         viewBinding true
     }
     composeOptions {
-        kotlinCompilerVersion '1.4.21'
+        kotlinCompilerVersion '1.4.20'
         kotlinCompilerExtensionVersion compose_version
     }
 }
