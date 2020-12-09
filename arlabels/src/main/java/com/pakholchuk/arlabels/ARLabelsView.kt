@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import androidx.annotation.RequiresFeature
 import androidx.camera.core.CameraSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.runtime.Composable
@@ -54,13 +55,27 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
         checkPermissions()
     }
 
-    fun setUpLabelsView(
-        labelsDataList: List<ARLabelData>,
-        onLabelClick: ((pointId: String) -> Unit)? = null,
-        label: @Composable ((labelProperties: LabelProperties, modifier: Modifier) -> Unit)? = null
-    ) {
-        viewModel.setARLabelData(labelsDataList)
+//    fun setUpLabelsView(
+//        labelsDataList: List<ARLabelData>,
+//        onLabelClick: ((pointId: String) -> Unit)? = null,
+//        label: @Composable ((labelProperties: LabelProperties, modifier: Modifier) -> Unit)? = null
+//    ) {
+//        viewModel.setARLabelData(labelsDataList)
+//        this.onLabelClick = onLabelClick
+//        this.label = label
+//    }
+
+    var labelsDataList: List<ARLabelData> = listOf()
+        set(value) {
+            field = value
+            viewModel.setARLabelData(value)
+        }
+
+    fun setOnLabelClickListener(onLabelClick: (pointId: String) -> Unit) {
         this.onLabelClick = onLabelClick
+    }
+
+    fun setLabelComposable(label: @Composable (labelProperties: LabelProperties, modifier: Modifier) -> Unit) {
         this.label = label
     }
 
