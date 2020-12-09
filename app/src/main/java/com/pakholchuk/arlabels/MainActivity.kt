@@ -4,25 +4,24 @@ package com.pakholchuk.arlabels
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.clickable
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LifecycleOwner
 import com.pakholchuk.arlabels.databinding.ActivityMainBinding
+import com.pakholchuk.arlabels.databinding.MyLabelItemBinding
+import com.pakholchuk.arlabels.di.ARLabelsDependencyProvider
 //import com.pakholchuk.arlabels.ui.purple200
 
 const val TAG = "fatal_log"
@@ -32,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 //    private val viewModel by viewModels<com.pakholchuk.arlabels.ARLabelsViewModel>()
 
+
     private val REQUEST_CODE_PERMISSIONS = 10
     private val REQUIRED_PERMISSIONS = arrayOf(
         Manifest.permission.CAMERA,
@@ -39,9 +39,11 @@ class MainActivity : AppCompatActivity() {
         Manifest.permission.ACCESS_FINE_LOCATION
     )
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
 
 //        if (allPermissionsGranted()) {
@@ -133,69 +135,7 @@ class MainActivity : AppCompatActivity() {
                 com.pakholchuk.arlabels.LocationData(55.682830, 37.315526)
             ),
         )
-        val jobPoints = mutableListOf(
-            com.pakholchuk.arlabels.Point(
-                "1",
-                "first",
-                com.pakholchuk.arlabels.LocationData(55.668129, 37.511553)
-            ),
-            com.pakholchuk.arlabels.Point(
-                "1",
-                "second",
-                com.pakholchuk.arlabels.LocationData(55.668123, 37.512063)
-            ),
-            com.pakholchuk.arlabels.Point(
-                "1",
-                "third",
-                com.pakholchuk.arlabels.LocationData(55.668158, 37.513007)
-            ),
-            com.pakholchuk.arlabels.Point(
-                "1",
-                "fourth",
-                com.pakholchuk.arlabels.LocationData(55.667929, 37.513325)
-            ),
-            com.pakholchuk.arlabels.Point(
-                "1",
-                "fifth",
-                com.pakholchuk.arlabels.LocationData(55.667473, 37.513726)
-            ),
-            com.pakholchuk.arlabels.Point(
-                "1",
-                "sixth",
-                com.pakholchuk.arlabels.LocationData(55.667294, 37.512576)
-            ),
-            com.pakholchuk.arlabels.Point(
-                "1",
-                "seventh",
-                com.pakholchuk.arlabels.LocationData(55.667262, 37.511976)
-            ),
-            com.pakholchuk.arlabels.Point(
-                "1",
-                "eighth",
-                com.pakholchuk.arlabels.LocationData(55.667347, 37.511278)
-            ),
-            com.pakholchuk.arlabels.Point(
-                "1",
-                "ninth",
-                com.pakholchuk.arlabels.LocationData(55.667635, 37.511111)
-            ),
-            com.pakholchuk.arlabels.Point(
-                "1",
-                "O'K",
-                com.pakholchuk.arlabels.LocationData(55.666644, 37.514676)
-            ),
-            com.pakholchuk.arlabels.Point(
-                "OFFICE",
-                "Office",
-                com.pakholchuk.arlabels.LocationData(55.667638, 37.511648)
-            ),
-            com.pakholchuk.arlabels.Point(
-                "M",
-                "Метро Пр.Вернадского",
-                com.pakholchuk.arlabels.LocationData(55.676132, 37.505141)
-            ),
 
-            )
 
 //        viewModel.setARLabelData(jobPoints.map { ARLabelData(it) })
 //
@@ -230,6 +170,134 @@ class MainActivity : AppCompatActivity() {
 ////            Labels(labels = labels, onLabelClick = ::onLabelClick)
 //        }
 */
+        val jobPoints = mutableListOf(
+            com.pakholchuk.arlabels.Point(
+                "1",
+                "first",
+                com.pakholchuk.arlabels.LocationData(55.668129, 37.511553)
+            ),
+            com.pakholchuk.arlabels.Point(
+                "2",
+                "second",
+                com.pakholchuk.arlabels.LocationData(55.668123, 37.512063)
+            ),
+            com.pakholchuk.arlabels.Point(
+                "3",
+                "third",
+                com.pakholchuk.arlabels.LocationData(55.668158, 37.513007)
+            ),
+            com.pakholchuk.arlabels.Point(
+                "4",
+                "fourth",
+                com.pakholchuk.arlabels.LocationData(55.667929, 37.513325)
+            ),
+            com.pakholchuk.arlabels.Point(
+                "5",
+                "fifth",
+                com.pakholchuk.arlabels.LocationData(55.667473, 37.513726)
+            ),
+            com.pakholchuk.arlabels.Point(
+                "6",
+                "sixth",
+                com.pakholchuk.arlabels.LocationData(55.667294, 37.512576)
+            ),
+            com.pakholchuk.arlabels.Point(
+                "7",
+                "seventh",
+                com.pakholchuk.arlabels.LocationData(55.667262, 37.511976)
+            ),
+            com.pakholchuk.arlabels.Point(
+                "8",
+                "eighth",
+                com.pakholchuk.arlabels.LocationData(55.667347, 37.511278)
+            ),
+            com.pakholchuk.arlabels.Point(
+                "9",
+                "ninth",
+                com.pakholchuk.arlabels.LocationData(55.667635, 37.511111)
+            ),
+            com.pakholchuk.arlabels.Point(
+                "19",
+                "O'K",
+                com.pakholchuk.arlabels.LocationData(55.666644, 37.514676)
+            ),
+            com.pakholchuk.arlabels.Point(
+                "OFFICE",
+                "Office",
+                com.pakholchuk.arlabels.LocationData(55.667638, 37.511648)
+            ),
+            com.pakholchuk.arlabels.Point(
+                "M",
+                "Метро Пр.Вернадского",
+                com.pakholchuk.arlabels.LocationData(55.676132, 37.505141)
+            ),
+
+            )
+        binding.labelsView.onCreate(object : ARLabelsDependencyProvider {
+            override fun getSensorsContext(): Context {
+                return this@MainActivity
+            }
+
+            override fun getARViewLifecycleOwner(): LifecycleOwner {
+                return this@MainActivity
+
+            }
+
+            override fun getPermissionActivity(): Activity {
+                return this@MainActivity
+
+            }
+        })
+
+        val l = jobPoints.map { ARLabelData(it) }
+        binding.labelsView.labelsDataList = l
+        binding.labelsView.setOnLabelClickListener {
+            Toast.makeText(this, "Click", Toast.LENGTH_SHORT).show() }
+
+
+
+        @Composable
+        fun XMLLabel(labelProperties: LabelProperties) {
+            val color = remember(Color.Blue) { l.find { it.point.id == labelProperties.pointID }?.additionalLabelProperties ?: Color.Red }
+            Surface(
+                color = color as Color,
+                modifier = Modifier.clickable(onClick = { l.find { it.point.id == labelProperties.pointID }?.additionalLabelProperties = Color.Green})
+            ) {
+
+                Text(text = labelProperties.title, fontSize = 34.sp)
+            }
+        }
+        binding.labelsView.setComposableLabel { labelProperties -> XMLLabel(
+            labelProperties = labelProperties
+        )  }
+
+
+//        binding.labelsView.setAndroidViewLabel {
+//            val s = MyLabelItemBinding.inflate(LayoutInflater.from(it))
+//            class MyViewHolder(val bi: MyLabelItemBinding) : ViewHolder(bi.root) {
+//                init {
+//                    Log.d(TAG, "onCreateHolder: $this ")
+//                }
+//                override fun onBindView(labelProperties: LabelProperties) {
+//                    Log.d(TAG, "onBindHolder: $this ")
+//                    bi.textview.text = labelProperties.title
+//                    bi.textview.textSize = 45f
+//                }
+//            }
+//            MyViewHolder(s)
+//        }
+
+//            { view, labelProperties ->
+//            view.setBackgroundColor(resources.getColor(android.R.color.holo_green_dark))
+//            val textView = view.findViewById<TextView>(R.id.textview)
+//            Log.d(TAG, "textView found $textView")
+//            textView.apply {
+//                text = labelProperties.title
+//                textSize = 34f
+//                setTextColor(resources.getColor(android.R.color.white))
+//            }
+//
+//        })
     }
 
 

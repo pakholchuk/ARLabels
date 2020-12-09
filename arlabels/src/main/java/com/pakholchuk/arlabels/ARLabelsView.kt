@@ -5,12 +5,14 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
-import androidx.annotation.RequiresFeature
 import androidx.camera.core.CameraSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.Observer
@@ -22,6 +24,7 @@ import com.pakholchuk.arlabels.databinding.ArLabelsLayoutBinding
 import com.pakholchuk.arlabels.di.ARLabelsComponent
 import com.pakholchuk.arlabels.di.ARLabelsDependencyProvider
 import com.pakholchuk.arlabels.di.DaggerARLabelsComponent
+import com.pakholchuk.arlabels.ui.Labels
 import com.pakholchuk.arlabels.utils.ARLabelUtils
 import com.pakholchuk.arlabels.utils.ARLabelUtils.TAG
 
@@ -44,7 +47,7 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
     private lateinit var arLabelsComponent: ARLabelsComponent
 
     private var onLabelClick: ((pointId: String) -> Unit)? = null
-    private var label: @Composable ((LabelProperties, Modifier) -> Unit)? = null
+    private var label: @Composable ((LabelProperties) -> Unit)? = null
 
     fun onCreate(arLabelsDependencyProvider: ARLabelsDependencyProvider) {
         arLabelsComponent =
@@ -75,8 +78,22 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
         this.onLabelClick = onLabelClick
     }
 
-    fun setLabelComposable(label: @Composable (labelProperties: LabelProperties, modifier: Modifier) -> Unit) {
+    fun setComposableLabel(label: @Composable (labelProperties: LabelProperties) -> Unit) {
         this.label = label
+    }
+
+    fun setAndroidViewLabel(onCreateViewHolder: (context: Context) -> ViewHolder) {
+        @Composable
+        fun AndroidViewLabel(labelProperties: LabelProperties) {
+            val context = AmbientContext.current
+            val holder = remember {
+                onCreateViewHolder(context)
+            }
+            AndroidView(viewBlock = { holder.view }) {
+                holder.onBindView(labelProperties)
+            }
+        }
+        label = { lp -> AndroidViewLabel(lp) }
     }
 
     private fun checkPermissions() {

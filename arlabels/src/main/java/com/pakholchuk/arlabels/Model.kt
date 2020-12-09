@@ -41,5 +41,5 @@ data class DestinationData(
 
 data class ARLabelData(
     val point: Point,
-    val additionalLabelProperties: Any? = null
+    var additionalLabelProperties: Any? = null
 )

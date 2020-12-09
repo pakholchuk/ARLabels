@@ -1,4 +1,4 @@
-package com.pakholchuk.arlabels
+package com.pakholchuk.arlabels.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -18,13 +18,14 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
+import com.pakholchuk.arlabels.LabelProperties
 
 @Composable
 fun Labels(
     labels: List<LabelProperties>,
     modifier: Modifier = Modifier,
     onLabelClick: ((unitId: String) -> Unit)? = null,
-    label: @Composable ((LabelProperties, Modifier) -> Unit)? = null
+    label: @Composable ((LabelProperties) -> Unit)? = null
 ) {
     Box(modifier = modifier.fillMaxSize().background(Color.Transparent)) {
         if (label == null)
@@ -37,12 +38,11 @@ fun Labels(
                 )
             }
         else labels.forEach {
-            label(
-                it,
-                Modifier
-                    .centerCoordinates(it.positionX, it.positionY)
-                    .clickable(onClick = { onLabelClick?.let { onLabelClick -> onLabelClick(it.pointID) } })
-            )
+            Surface(Modifier
+                .centerCoordinates(it.positionX, it.positionY)
+                .clickable(onClick = { onLabelClick?.let { onLabelClick -> onLabelClick(it.pointID) } })) {
+                label(it)
+            }
 
         }
     }

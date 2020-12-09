@@ -1,3 +1,4 @@
 rootProject.name = "ARLabels"
 include ':app'
 include ':arlabels'
+include ':mylibrary'

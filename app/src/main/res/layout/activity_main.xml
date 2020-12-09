@@ -3,11 +3,11 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-<!--    <com.pakholchuk.arlabels.ARLabels-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:id="@+id/labelsView" />-->
+    <com.pakholchuk.arlabels.ARLabelsView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/labelsView"
+        />
     <!--    <FrameLayout-->
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="match_parent"-->

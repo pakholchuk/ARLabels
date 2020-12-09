@@ -93,4 +93,8 @@ dependencies {
     implementation "com.google.dagger:dagger-android:$daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+
+    implementation project(":arlabels")
+
+//    implementation 'com.github.pakholchuk:ARLabels:1.0.0'
 }
