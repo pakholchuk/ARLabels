@@ -10,7 +10,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -19,15 +18,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.map
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.pakholchuk.arlabels.adapter.LabelsAdapter
 import com.pakholchuk.arlabels.data.PermissionResult
 import com.pakholchuk.arlabels.databinding.ArLabelsLayoutBinding
 import com.pakholchuk.arlabels.di.ARLabelsComponent
 import com.pakholchuk.arlabels.di.ARLabelsDependencyProvider
 import com.pakholchuk.arlabels.di.DaggerARLabelsComponent
+import com.pakholchuk.arlabels.ui.Label
 import com.pakholchuk.arlabels.ui.Labels
 import com.pakholchuk.arlabels.utils.ARLabelUtils
 import com.pakholchuk.arlabels.utils.ARLabelUtils.TAG
-
 
 @Suppress("UnusedPrivateMember", "TooManyFunctions")
 class ARLabelsView : FrameLayout, LifecycleObserver {
@@ -46,8 +46,17 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
     private lateinit var viewModel: IARLabelsViewModel
     private lateinit var arLabelsComponent: ARLabelsComponent
 
-    private var onLabelClick: ((pointId: String) -> Unit)? = null
-    private var label: @Composable ((LabelProperties) -> Unit)? = null
+    var adapter: LabelsAdapter<*>? = null
+        set(value) {
+            field = value
+            if (value != null) {
+                createCustomLabelComposable(value)
+            }
+        }
+
+    var maxDistance: Int = 20000
+
+    private var label: @Composable ((LabelProperties, listPosition: Int) -> Unit)? = null
 
     fun onCreate(arLabelsDependencyProvider: ARLabelsDependencyProvider) {
         arLabelsComponent =
@@ -58,42 +67,19 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
         checkPermissions()
     }
 
-//    fun setUpLabelsView(
-//        labelsDataList: List<ARLabelData>,
-//        onLabelClick: ((pointId: String) -> Unit)? = null,
-//        label: @Composable ((labelProperties: LabelProperties, modifier: Modifier) -> Unit)? = null
-//    ) {
-//        viewModel.setARLabelData(labelsDataList)
-//        this.onLabelClick = onLabelClick
-//        this.label = label
-//    }
-
-    var labelsDataList: List<ARLabelData> = listOf()
-        set(value) {
-            field = value
-            viewModel.setARLabelData(value)
-        }
-
-    fun setOnLabelClickListener(onLabelClick: (pointId: String) -> Unit) {
-        this.onLabelClick = onLabelClick
-    }
-
-    fun setComposableLabel(label: @Composable (labelProperties: LabelProperties) -> Unit) {
-        this.label = label
-    }
-
-    fun setAndroidViewLabel(onCreateViewHolder: (context: Context) -> ViewHolder) {
+    private fun createCustomLabelComposable(adapter: LabelsAdapter<*>) {
+        viewModel.setAdapter(adapter)
         @Composable
-        fun AndroidViewLabel(labelProperties: LabelProperties) {
+        fun AndroidViewLabel(properties: LabelProperties, position: Int) {
             val context = AmbientContext.current
             val holder = remember {
-                onCreateViewHolder(context)
+                adapter.createViewHolder(LayoutInflater.from(context), this)
             }
             AndroidView(viewBlock = { holder.view }) {
-                holder.onBindView(labelProperties)
+                holder.bind(properties, position)
             }
         }
-        label = { lp -> AndroidViewLabel(lp) }
+        label = { properties, position -> AndroidViewLabel(properties, position) }
     }
 
     private fun checkPermissions() {
@@ -118,7 +104,7 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
             val cameraProvider = cameraProviderFuture.get()
             val preview = androidx.camera.core.Preview.Builder()
                 .build()
-                .also { it.setSurfaceProvider(binding.viewFinder.surfaceProvider) }
+                .also { it.setSurfaceProvider(binding.previewView.surfaceProvider) }
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
@@ -138,26 +124,32 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
             val labelsState = viewModel.compassUpdate.map { compassData ->
                 ARLabelUtils.prepareLabelsProperties(
                     compassData,
-                    binding.viewFinder.width,
-                    binding.viewFinder.height
+                    binding.previewView.width,
+                    binding.previewView.height,
+                    maxDistance
                 )
             }.observeAsState(initial = listOf())
-            labelsState.value.find { it.positionX > 0 && it.positionX < binding.viewFinder.width }
+
+            labelsState.value.find { it?.positionX in 0..binding.previewView.width }
                 ?.let {
                     viewModel.setLowPassFilterAlpha(
                         ARLabelUtils.adjustLowPassFilterAlphaValue(
                             it.positionX.toFloat(),
-                            binding.viewFinder.width
+                            binding.previewView.width
                         )
                     )
                 }
-            Labels(labels = labelsState.value, onLabelClick = onLabelClick, label = label)
+
+            Labels(
+                labelsList = labelsState.value,
+                content = label ?: { labelProperties, position ->
+                    Label(labelProperties, position)
+                })
         }
         viewModel.getUpdates()
-
     }
 
-    private fun showErrorDialog(message: String) {
+//    private fun showErrorDialog(message: String) {
 //        AlertDialog.Builder(context)
 //            .setTitle(R.string.error_title)
 //            .setMessage(resources.getString(R.string.error_message, message))
@@ -169,7 +161,7 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
 //            }
 //            .setIcon(android.R.drawable.ic_dialog_alert)
 //            .show()
-    }
+//    }
 
     fun onRequestPermissionResult(
         requestCode: Int,

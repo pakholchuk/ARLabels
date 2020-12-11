@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pakholchuk.arlabels.adapter.LabelsAdapter
 import com.pakholchuk.arlabels.data.CompassRepository
 import com.pakholchuk.arlabels.data.PermissionManager
 import com.pakholchuk.arlabels.data.PermissionResult
@@ -18,9 +19,10 @@ internal class ARLabelsViewModel @Inject constructor(
     private val permissionManager: PermissionManager
 ) : ViewModel(), IARLabelsViewModel {
 
-    override val permissionState: MutableLiveData<PermissionResult> = MutableLiveData()
+    private val _permissionState = MutableLiveData<PermissionResult>()
+    override val permissionState: LiveData<PermissionResult> = _permissionState
 
-    override val _compassUpdate = MutableLiveData<CompassData>()
+    private val _compassUpdate = MutableLiveData<CompassData>()
     override val compassUpdate: LiveData<CompassData> = _compassUpdate
 
     override fun getUpdates() = viewModelScope.launch {
@@ -29,8 +31,8 @@ internal class ARLabelsViewModel @Inject constructor(
         }
     }
 
-    override fun setARLabelData(list: List<ARLabelData>) {
-        repository.labelDataList = list
+    override fun setAdapter(adapter: LabelsAdapter<*>) {
+        repository.adapter = adapter
     }
 
     override fun setLowPassFilterAlpha(lowPassFilterAlpha: Float) {
@@ -39,7 +41,7 @@ internal class ARLabelsViewModel @Inject constructor(
 
     override fun checkPermissions() {
         if (permissionManager.areAllPermissionsGranted()) {
-            permissionState.postValue(
+            _permissionState.postValue(
                 PermissionResult.GRANTED
             )
         } else permissionManager.requestAllPermissions()
@@ -52,7 +54,7 @@ internal class ARLabelsViewModel @Inject constructor(
     ) {
         val permissionResult =
             permissionManager.getPermissionsRequestResult(requestCode, grantResults)
-        permissionState.postValue(
+        _permissionState.postValue(
             permissionResult
         )
     }

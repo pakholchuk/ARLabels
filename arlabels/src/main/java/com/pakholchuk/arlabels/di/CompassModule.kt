@@ -29,7 +29,7 @@ internal abstract class CompassModule {
 
         @Provides
         fun providesCoLocation(arLabelsDependencyProvider: ARLabelsDependencyProvider) =
-            CoLocation.from(arLabelsDependencyProvider.getSensorsContext())
+            CoLocation.from(arLabelsDependencyProvider.getPermissionActivity())
 
 
         @JvmStatic
@@ -49,7 +49,7 @@ internal abstract class CompassModule {
         @Provides
         internal fun provideSensorManager(arLabelsDependencyProvider: ARLabelsDependencyProvider) =
             requireNotNull(
-                arLabelsDependencyProvider.getSensorsContext().getSystemService<SensorManager>()
+                arLabelsDependencyProvider.getPermissionActivity().getSystemService<SensorManager>()
             )
 
 
@@ -57,7 +57,7 @@ internal abstract class CompassModule {
         @Provides
         internal fun providesWindowManager(arLabelsDependencyProvider: ARLabelsDependencyProvider) =
             requireNotNull(
-                arLabelsDependencyProvider.getSensorsContext().getSystemService<WindowManager>()
+                arLabelsDependencyProvider.getPermissionActivity().getSystemService<WindowManager>()
             )
     }
 }

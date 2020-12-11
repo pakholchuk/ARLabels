@@ -1,6 +1,7 @@
 package com.pakholchuk.arlabels.data
 
 import com.pakholchuk.arlabels.*
+import com.pakholchuk.arlabels.adapter.LabelsAdapter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -19,47 +20,42 @@ internal class CompassRepository @Inject constructor(
         private const val MAXIMUM_ANGLE = 360
     }
 
-    var labelDataList: List<ARLabelData> = listOf()
+    var adapter: LabelsAdapter<*>? = null
 
     fun getCompassUpdates(): Flow<CompassData> =
         orientationProvider.getSensorUpdates()
             .combine(locationProvider.getLocationUpdates()) { currentOrientation: OrientationData, currentLocation: LocationData ->
-                val destinations = labelDataList
-                    .map {
-                        pointToDestination(
-                            it.point,
-                            currentLocation,
-                            currentOrientation.currentAzimuth
-                        )
-                    }
-
+                val locations = arrayListOf<LocationData>()
+                fillLocations(locations, adapter)
+                val destinations = locations.map { getDestination(it, currentLocation, currentOrientation.currentAzimuth) }
                 CompassData(
                     currentOrientation,
                     destinations,
                     getMaxDistance(destinations),
                     getMinDistance(destinations),
                     currentLocation,
-                    labelDataList
                 )
             }
 
-    private fun pointToDestination(
-        point: Point,
-        currentLocation: LocationData,
-        currentAzimuth: Float
-    ): DestinationData {
-        val headingAngle = calculateHeadingAngle(currentLocation, point.location)
+    private fun fillLocations(locations: ArrayList<LocationData>, adapter: LabelsAdapter<*>?) {
+        if (adapter != null && adapter.getItemCount() > 0) {
+            for (i in 0 until adapter.getItemCount())
+                locations.add(i, adapter.getLocationData(i))
+        }
+    }
+
+    private fun getDestination(pointLocation: LocationData, currentLocation: LocationData, currentAzimuth: Float): DestinationData {
+        val headingAngle = calculateHeadingAngle(currentLocation, pointLocation)
         val currentDestinationAzimuth =
             (headingAngle - currentAzimuth + MAXIMUM_ANGLE) % MAXIMUM_ANGLE
         val distanceToDestination = locationProvider.getDistanceBetweenPoints(
             currentLocation,
-            point.location
+            pointLocation
         )
         return DestinationData(
             currentDestinationAzimuth,
             distanceToDestination,
-            point.location,
-            point
+            pointLocation,
         )
     }
 

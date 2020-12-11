@@ -1,6 +1,7 @@
 package com.pakholchuk.arlabels.utils
 
 import com.pakholchuk.arlabels.CompassData
+import com.pakholchuk.arlabels.DestinationData
 import com.pakholchuk.arlabels.LabelProperties
 import kotlin.math.roundToInt
 
@@ -87,13 +88,11 @@ object ARLabelUtils {
 
     fun prepareLabelsProperties(
         compassData: CompassData, viewWidth: Int,
-        viewHeight: Int
-    ): List<LabelProperties> {
-
+        viewHeight: Int, maxDistance: Int
+    ): List<LabelProperties?> {
         return compassData.destinations
-            .filter { shouldShowLabel(it.currentDestinationAzimuth) }
-            .sortedByDescending { it.distanceToDestination }
             .map { destinationData ->
+                if (shouldShowLabel(destinationData, maxDistance))
                 LabelProperties(
                     destinationData.distanceToDestination,
                     calculatePositionX(
@@ -108,17 +107,12 @@ object ARLabelUtils {
                         compassData.maxDistance,
                         compassData.minDistance,
                         destinationData.distanceToDestination
-                    ),
-                    pointID = destinationData.destinationPoint.id,
-                    title = destinationData.destinationPoint.title,
-                    additionalProperties = compassData.labelDataList.find {
-                        it.point.id == destinationData.destinationPoint.id
-                    }?.additionalLabelProperties
-                )
+                    )
+                ) else null
             }
     }
 
-    private fun getAlphaValue(maxDistance: Int, minDistance: Int, distanceToDestination: Int): Int {
+    fun getAlphaValue(maxDistance: Int, minDistance: Int, distanceToDestination: Int): Int {
         return when (maxDistance) {
             minDistance -> MAX_ALPHA_VALUE.toInt()
             else -> (-ALPHA_DELTA / (maxDistance - minDistance) * distanceToDestination +
@@ -127,9 +121,10 @@ object ARLabelUtils {
         }
     }
 
-    private fun shouldShowLabel(destinationAzimuth: Float) =
-        (destinationAzimuth in HORIZONTAL_ANGLE_RANGE_MIN
-                || destinationAzimuth in HORIZONTAL_ANGLE_RANGE_MAX)
+    private fun shouldShowLabel(destinationData: DestinationData, maxDistance: Int) =
+        maxDistance >= destinationData.distanceToDestination
+                && (destinationData.currentDestinationAzimuth in HORIZONTAL_ANGLE_RANGE_MIN
+                    || destinationData.currentDestinationAzimuth in HORIZONTAL_ANGLE_RANGE_MAX)
 
 //    fun getShowUpAnimation(): ARLabelAnimationData {
 //        val propertySize = PropertyValuesHolder.ofInt(
