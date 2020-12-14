@@ -1,5 +1,6 @@
 package com.pakholchuk.arlabels
 
+import android.Manifest
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
@@ -16,10 +17,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.Observer
 import androidx.lifecycle.map
+import com.eazypermissions.common.model.PermissionResult
+import com.eazypermissions.coroutinespermission.PermissionManager
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.pakholchuk.arlabels.adapter.LabelsAdapter
-import com.pakholchuk.arlabels.data.PermissionResult
+//import com.pakholchuk.arlabels.data.PermissionResult
 import com.pakholchuk.arlabels.databinding.ArLabelsLayoutBinding
 import com.pakholchuk.arlabels.di.ARLabelsComponent
 import com.pakholchuk.arlabels.di.ARLabelsDependencyProvider
@@ -28,9 +31,16 @@ import com.pakholchuk.arlabels.ui.Label
 import com.pakholchuk.arlabels.ui.Labels
 import com.pakholchuk.arlabels.utils.ARLabelUtils
 import com.pakholchuk.arlabels.utils.ARLabelUtils.TAG
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Suppress("UnusedPrivateMember", "TooManyFunctions")
 class ARLabelsView : FrameLayout, LifecycleObserver {
+
+    companion object {
+        const val PERMISSION_REQUEST_ID = 304
+    }
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
@@ -83,19 +93,31 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
     }
 
     private fun checkPermissions() {
-        viewModel.permissionState.observe(
-            arLabelsComponent.arLabelsDependencyProvider().getARViewLifecycleOwner(),
-            Observer { permissionState ->
-                when (permissionState) {
-                    PermissionResult.GRANTED -> {
-                        startCamera()
-                        observeCompassState()
-                    }
-                    PermissionResult.SHOW_RATIONALE -> showRationaleSnackbar()
-                    PermissionResult.NOT_GRANTED -> Unit
+        CoroutineScope(Dispatchers.IO).launch {
+            val permissionResult = PermissionManager.requestPermissions(           //Suspends the coroutine
+                arLabelsComponent.arLabelsDependencyProvider().getPermissionActivity(),
+                PERMISSION_REQUEST_ID,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.CAMERA
+            )
+
+            when(permissionResult) {
+                is PermissionResult.PermissionGranted -> {
+                    startCamera()
+                    observeCompassState()
                 }
-            })
-        viewModel.checkPermissions()
+                is PermissionResult.PermissionDenied -> {
+                    //Add your logic to handle permission denial
+                }
+                is PermissionResult.PermissionDeniedPermanently -> {
+                    //Add your logic here if user denied permission(s) permanently.
+                    //Ideally you should ask user to manually go to settings and enable permission(s)
+                }
+                is PermissionResult.ShowRational -> {
+                    showRationaleSnackbar()
+                }
+            }
+        }
     }
 
     private fun startCamera() {
@@ -163,21 +185,13 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
 //            .show()
 //    }
 
-    fun onRequestPermissionResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        viewModel.onRequestPermissionResult(requestCode, permissions, grantResults)
-    }
-
     private fun showRationaleSnackbar() {
         Snackbar.make(
             this,
             R.string.essential_permissions_not_granted_info,
             Snackbar.LENGTH_SHORT
         )
-            .setAction(R.string.permission_recheck_question) { viewModel.checkPermissions() }
+            .setAction(R.string.permission_recheck_question) { checkPermissions() }
             .setDuration(BaseTransientBottomBar.LENGTH_INDEFINITE)
             .show()
     }

@@ -6,7 +6,6 @@ import androidx.core.content.getSystemService
 import com.pakholchuk.arlabels.*
 import com.pakholchuk.arlabels.data.LocationProvider
 import com.pakholchuk.arlabels.data.OrientationProvider
-import com.pakholchuk.arlabels.data.PermissionManager
 import com.patloew.colocation.CoLocation
 import dagger.Binds
 import dagger.Module
@@ -19,23 +18,13 @@ internal abstract class CompassModule {
     abstract fun provideViewModel(viewModel: ARLabelsViewModel): IARLabelsViewModel
 
     companion object {
-        @JvmStatic
-        @Provides
-        fun providesPermissionManager(arLabelsDependencyProvider: ARLabelsDependencyProvider): PermissionManager {
-            return PermissionManager(
-                arLabelsDependencyProvider.getPermissionActivity()
-            )
-        }
-
         @Provides
         fun providesCoLocation(arLabelsDependencyProvider: ARLabelsDependencyProvider) =
             CoLocation.from(arLabelsDependencyProvider.getPermissionActivity())
 
-
         @JvmStatic
         @Provides
         fun providesLocationProvider(coLocation: CoLocation) = LocationProvider(coLocation)
-
 
         @JvmStatic
         @Provides
@@ -44,14 +33,12 @@ internal abstract class CompassModule {
             windowManager: WindowManager
         ) = OrientationProvider(sensorManager, windowManager)
 
-
         @JvmStatic
         @Provides
         internal fun provideSensorManager(arLabelsDependencyProvider: ARLabelsDependencyProvider) =
             requireNotNull(
                 arLabelsDependencyProvider.getPermissionActivity().getSystemService<SensorManager>()
             )
-
 
         @JvmStatic
         @Provides
