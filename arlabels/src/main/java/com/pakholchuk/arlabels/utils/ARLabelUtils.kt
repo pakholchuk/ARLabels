@@ -1,5 +1,6 @@
 package com.pakholchuk.arlabels.utils
 
+import androidx.compose.ui.unit.max
 import com.pakholchuk.arlabels.CompassData
 import com.pakholchuk.arlabels.DestinationData
 import com.pakholchuk.arlabels.LabelProperties
@@ -89,11 +90,12 @@ object ARLabelUtils {
     fun prepareLabelsProperties(
         compassData: CompassData, viewWidth: Int,
         viewHeight: Int, maxDistance: Int
-    ): List<LabelProperties?> {
+    ): List<LabelProperties> {
         return compassData.destinations
+            .filter { shouldShowLabel(it, maxDistance) }
             .map { destinationData ->
-                if (shouldShowLabel(destinationData, maxDistance))
                 LabelProperties(
+                    destinationData.id,
                     destinationData.distanceToDestination,
                     calculatePositionX(
                         destinationData.currentDestinationAzimuth,
@@ -108,7 +110,7 @@ object ARLabelUtils {
                         compassData.minDistance,
                         destinationData.distanceToDestination
                     )
-                ) else null
+                )
             }
     }
 

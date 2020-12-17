@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -24,21 +23,18 @@ import com.pakholchuk.arlabels.LabelProperties
 
 @Composable
 fun Labels(
-        labelsList: List<LabelProperties?>,
+        labelsList: List<LabelProperties>,
         modifier: Modifier = Modifier,
-        onLabelClick: ((listPosition: Int) -> Unit)? = null,
-        content: @Composable (LabelProperties, listPosition: Int) -> Unit
+        onLabelClick: ((id: String) -> Unit)? = null,
+        content: @Composable (LabelProperties) -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize().background(Color.Transparent)) {
-        val indexedLabels = labelsList.mapIndexed { index, labelProperties ->
-            IndexedValue(index, labelProperties)
-        }.sortedByDescending { it.value?.distance }
-        indexedLabels.forEach {
-            if (it.value != null)
-            Surface(Modifier
-                .centerCoordinates(it.value!!.positionX, it.value!!.positionY)
-                .clickable(onClick = { onLabelClick?.let { onLabelClick -> onLabelClick(it.index) } })) {
-                content(it.value!!, it.index)
+        labelsList.sortedByDescending { it.distance }
+            .forEach {
+                Surface(Modifier
+                    .centerCoordinates(it.positionX, it.positionY)
+                    .clickable(onClick = { onLabelClick?.let { onLabelClick -> onLabelClick(it.id) } })) {
+                    content(it)
             }
         }
     }
@@ -54,7 +50,7 @@ fun Modifier.centerCoordinates(x: Int, y: Int) = Modifier.layout { measurable, c
 }
 
 @Composable
-fun Label(labelProperties: LabelProperties, pos: Int) {
+fun Label(labelProperties: LabelProperties) {
     Surface(
         color = Color.White.copy(alpha = labelProperties.alpha.toFloat()/256),
         shape = RoundedCornerShape(4.dp),
@@ -69,19 +65,6 @@ fun Label(labelProperties: LabelProperties, pos: Int) {
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-//    val labels = mutableListOf<LabelProperties>()
-//    for (i in 0..10) labels.add(
-//        LabelProperties(
-//            100, i * 30, i * 50, 50, "this is long title $i", "label$i"
-//        )
-//    )
-//    Labels(labels = labels)
-
 }
 
 @Preview

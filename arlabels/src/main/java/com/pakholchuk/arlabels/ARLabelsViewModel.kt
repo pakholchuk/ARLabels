@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.pakholchuk.arlabels.adapter.LabelsAdapter
 import com.pakholchuk.arlabels.data.CompassRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,13 +16,16 @@ import javax.inject.Inject
 internal class ARLabelsViewModel @Inject constructor(
     private val repository: CompassRepository
 ) : ViewModel(), IARLabelsViewModel {
+    private var job: Job? = null
 
     private val _compassUpdate = MutableLiveData<CompassData>()
     override val compassUpdate: LiveData<CompassData> = _compassUpdate
 
-    override fun getUpdates() = viewModelScope.launch {
-        repository.getCompassUpdates().collectLatest {
-            _compassUpdate.postValue(it)
+    override fun getUpdates() {
+        job = viewModelScope.launch {
+            repository.getCompassUpdates().collectLatest {
+                _compassUpdate.postValue(it)
+            }
         }
     }
 
@@ -31,5 +35,10 @@ internal class ARLabelsViewModel @Inject constructor(
 
     override fun setLowPassFilterAlpha(lowPassFilterAlpha: Float) {
         repository.setLowPassFilterAlpha(lowPassFilterAlpha)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        job?.cancel()
     }
 }

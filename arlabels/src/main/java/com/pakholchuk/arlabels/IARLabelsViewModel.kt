@@ -6,7 +6,7 @@ import kotlinx.coroutines.Job
 
 internal interface IARLabelsViewModel {
     val compassUpdate: LiveData<CompassData>
-    fun getUpdates(): Job
+    fun getUpdates()
     fun setAdapter(adapter: LabelsAdapter<*>)
     fun setLowPassFilterAlpha(lowPassFilterAlpha: Float)
 }

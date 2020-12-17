@@ -1,6 +1,7 @@
 package com.pakholchuk.arlabels
 
 data class LabelProperties(
+    val id: String,
     val distance: Int,
     val positionX: Int,
     val positionY: Int,
@@ -8,6 +9,7 @@ data class LabelProperties(
 )
 
 data class LocationData(
+    val id: String,
     val latitude: Double,
     val longitude: Double
 )
@@ -23,6 +25,7 @@ data class CompassData(
 )
 
 data class DestinationData(
+    val id: String,
     val currentDestinationAzimuth: Float,
     val distanceToDestination: Int,
     val destinationLocation: LocationData,

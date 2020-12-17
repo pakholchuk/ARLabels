@@ -2,6 +2,8 @@ package com.pakholchuk.arlabels.data
 
 import android.annotation.SuppressLint
 import android.location.Location
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.gms.location.LocationRequest
 import com.pakholchuk.arlabels.LocationData
 import com.patloew.colocation.CoLocation
@@ -10,7 +12,9 @@ import kotlinx.coroutines.flow.map
 import kotlin.math.roundToInt
 
 @SuppressLint("MissingPermission")
-internal class LocationProvider(private val coLocation: CoLocation) {
+internal class LocationProvider(
+        private val coLocation: CoLocation
+        ) {
     companion object {
         private const val LOCATION_REQUEST_INTERVAL = 5000L
         private const val FASTEST_REQUEST_INTERVAL = 20L
@@ -35,7 +39,6 @@ internal class LocationProvider(private val coLocation: CoLocation) {
         val locationB = Location("B")
         locationB.latitude = destinationLocation?.latitude ?: 0.0
         locationB.longitude = destinationLocation?.longitude ?: 0.0
-
         return locationA.distanceTo(locationB).roundToInt()
     }
 
@@ -43,7 +46,7 @@ internal class LocationProvider(private val coLocation: CoLocation) {
         return coLocation
             .getLocationUpdates(locationRequest)
             .map {
-                LocationData(it.latitude, it.longitude)
+                LocationData("", it.latitude, it.longitude)
             }
     }
 }

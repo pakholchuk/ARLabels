@@ -15,12 +15,13 @@ import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.Observer
 import androidx.lifecycle.map
+import androidx.recyclerview.widget.RecyclerView
 import com.eazypermissions.common.model.PermissionResult
 import com.eazypermissions.coroutinespermission.PermissionManager
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.pakholchuk.arlabels.adapter.LabelViewHolder
 import com.pakholchuk.arlabels.adapter.LabelsAdapter
 //import com.pakholchuk.arlabels.data.PermissionResult
 import com.pakholchuk.arlabels.databinding.ArLabelsLayoutBinding
@@ -36,7 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Suppress("UnusedPrivateMember", "TooManyFunctions")
-class ARLabelsView : FrameLayout, LifecycleObserver {
+class ARLabelsView<VH : LabelViewHolder> : FrameLayout, LifecycleObserver {
 
     companion object {
         const val PERMISSION_REQUEST_ID = 304
@@ -56,17 +57,17 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
     private lateinit var viewModel: IARLabelsViewModel
     private lateinit var arLabelsComponent: ARLabelsComponent
 
-    var adapter: LabelsAdapter<*>? = null
+    var adapter: LabelsAdapter<VH>? = null
         set(value) {
             field = value
-            if (value != null) {
+            if (value != null)
                 createCustomLabelComposable(value)
-            }
         }
 
     var maxDistance: Int = 20000
 
-    private var label: @Composable ((LabelProperties, listPosition: Int) -> Unit)? = null
+    private var label: @Composable ((LabelProperties) -> Unit)? = null
+
 
     fun onCreate(arLabelsDependencyProvider: ARLabelsDependencyProvider) {
         arLabelsComponent =
@@ -77,19 +78,19 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
         checkPermissions()
     }
 
-    private fun createCustomLabelComposable(adapter: LabelsAdapter<*>) {
+    private fun createCustomLabelComposable(adapter: LabelsAdapter<VH>) {
         viewModel.setAdapter(adapter)
         @Composable
-        fun AndroidViewLabel(properties: LabelProperties, position: Int) {
+        fun AndroidViewLabel(properties: LabelProperties) {
             val context = AmbientContext.current
             val holder = remember {
-                adapter.createViewHolder(LayoutInflater.from(context), this)
+                adapter.onCreateViewHolder(LayoutInflater.from(context), this)
             }
             AndroidView(viewBlock = { holder.view }) {
-                holder.bind(properties, position)
+                adapter.onDrawLabel(holder, properties)
             }
         }
-        label = { properties, position -> AndroidViewLabel(properties, position) }
+        label = { properties -> AndroidViewLabel(properties) }
     }
 
     private fun checkPermissions() {
@@ -152,7 +153,7 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
                 )
             }.observeAsState(initial = listOf())
 
-            labelsState.value.find { it?.positionX in 0..binding.previewView.width }
+            labelsState.value.find { it.positionX in 0..binding.previewView.width }
                 ?.let {
                     viewModel.setLowPassFilterAlpha(
                         ARLabelUtils.adjustLowPassFilterAlphaValue(
@@ -164,8 +165,7 @@ class ARLabelsView : FrameLayout, LifecycleObserver {
 
             Labels(
                 labelsList = labelsState.value,
-                content = label ?: { labelProperties, position ->
-                    Label(labelProperties, position)
+                content = label ?: { Label(it)
                 })
         }
         viewModel.getUpdates()

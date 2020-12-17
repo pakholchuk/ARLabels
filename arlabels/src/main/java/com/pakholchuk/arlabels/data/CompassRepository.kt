@@ -2,7 +2,7 @@ package com.pakholchuk.arlabels.data
 
 import com.pakholchuk.arlabels.*
 import com.pakholchuk.arlabels.adapter.LabelsAdapter
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
@@ -25,8 +25,10 @@ internal class CompassRepository @Inject constructor(
     fun getCompassUpdates(): Flow<CompassData> =
         orientationProvider.getSensorUpdates()
             .combine(locationProvider.getLocationUpdates()) { currentOrientation: OrientationData, currentLocation: LocationData ->
-                val locations = arrayListOf<LocationData>()
-                fillLocations(locations, adapter)
+                var locations = mutableListOf<LocationData>()
+                if (adapter != null) {
+                    locations = adapter!!.getLocationsList().toMutableList()
+                }
                 val destinations = locations.map { getDestination(it, currentLocation, currentOrientation.currentAzimuth) }
                 CompassData(
                     currentOrientation,
@@ -37,13 +39,6 @@ internal class CompassRepository @Inject constructor(
                 )
             }
 
-    private fun fillLocations(locations: ArrayList<LocationData>, adapter: LabelsAdapter<*>?) {
-        if (adapter != null && adapter.getItemCount() > 0) {
-            for (i in 0 until adapter.getItemCount())
-                locations.add(i, adapter.getLocationData(i))
-        }
-    }
-
     private fun getDestination(pointLocation: LocationData, currentLocation: LocationData, currentAzimuth: Float): DestinationData {
         val headingAngle = calculateHeadingAngle(currentLocation, pointLocation)
         val currentDestinationAzimuth =
@@ -53,6 +48,7 @@ internal class CompassRepository @Inject constructor(
             pointLocation
         )
         return DestinationData(
+            pointLocation.id,
             currentDestinationAzimuth,
             distanceToDestination,
             pointLocation,
