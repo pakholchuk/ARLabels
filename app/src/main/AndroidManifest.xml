@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ARLabels">
         <activity
-            android:name=".MainActivity"
+            android:name="com.pakholchuk.arlabels.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.ARLabels.NoActionBar">
             <intent-filter>

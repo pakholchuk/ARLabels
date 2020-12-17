@@ -3,7 +3,6 @@ package com.pakholchuk.arlabels
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
 import com.pakholchuk.arlabels.adapter.LabelViewHolder
 import com.pakholchuk.arlabels.adapter.LabelsAdapter
 import com.pakholchuk.arlabels.databinding.MyLabelItemBinding

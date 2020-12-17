@@ -33,7 +33,9 @@ fun Labels(
             .forEach {
                 Surface(Modifier
                     .centerCoordinates(it.positionX, it.positionY)
-                    .clickable(onClick = { onLabelClick?.let { onLabelClick -> onLabelClick(it.id) } })) {
+                    .clickable(onClick = { onLabelClick?.let { onLabelClick -> onLabelClick(it.id) } }),
+                    color = Color.Transparent
+                ) {
                     content(it)
             }
         }

@@ -2,8 +2,6 @@ package com.pakholchuk.arlabels.data
 
 import android.annotation.SuppressLint
 import android.location.Location
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.gms.location.LocationRequest
 import com.pakholchuk.arlabels.LocationData
 import com.patloew.colocation.CoLocation

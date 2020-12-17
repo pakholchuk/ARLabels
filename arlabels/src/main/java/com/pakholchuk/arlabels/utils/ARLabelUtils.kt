@@ -1,6 +1,5 @@
 package com.pakholchuk.arlabels.utils
 
-import androidx.compose.ui.unit.max
 import com.pakholchuk.arlabels.CompassData
 import com.pakholchuk.arlabels.DestinationData
 import com.pakholchuk.arlabels.LabelProperties

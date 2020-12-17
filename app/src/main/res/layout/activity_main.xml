@@ -9,6 +9,12 @@
         android:layout_height="match_parent"
         android:id="@+id/labelsView"
         />
+    <androidx.compose.ui.platform.ComposeView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:id="@+id/co"/>
+
     <com.google.android.material.slider.Slider
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
