@@ -18,7 +18,6 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.ui.tooling.preview.Preview
 import com.pakholchuk.arlabels.LabelProperties
 
 @Composable
@@ -66,13 +65,5 @@ fun Label(labelProperties: LabelProperties) {
                 text = "${labelProperties.distance} m",
             )
         }
-    }
-}
-
-@Preview
-@Composable
-fun PreviewLabel() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Text(text = "SFSF", modifier = Modifier.centerCoordinates(100, 200))
     }
 }

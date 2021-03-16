@@ -15,7 +15,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -86,11 +86,11 @@ class ARLabelsView<VH : LabelViewHolder> : FrameLayout, LifecycleObserver {
         viewModel.setAdapter(adapter)
         @Composable
         fun AndroidViewLabel(properties: LabelProperties) {
-            val context = AmbientContext.current
+            val context = LocalContext.current
             val holder = remember {
                 adapter.onCreateViewHolder(LayoutInflater.from(context), this)
             }
-            AndroidView(viewBlock = { holder.view }) {
+            AndroidView({ holder.view }) {
                 adapter.onDrawLabel(holder, properties)
             }
         }

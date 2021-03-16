@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         val co = CoBinding.inflate(layoutInflater)
         binding.co.setContent {
-            AndroidView(viewBlock = { co.root }, Modifier.background(Color.Blue, RoundedCornerShape(2.dp)))
+            AndroidView({ co.root }, Modifier.background(Color.Blue, RoundedCornerShape(2.dp)))
         }
         
         val adapter = ARLabelsAdapter2()
