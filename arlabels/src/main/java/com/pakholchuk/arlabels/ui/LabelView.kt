@@ -41,7 +41,7 @@ fun Labels(
     }
 }
 
-fun Modifier.centerCoordinates(x: Int, y: Int) = Modifier.layout { measurable, constraints ->
+fun Modifier.centerCoordinates(x: Int, y: Int) = this.layout { measurable, constraints ->
     val placeable = measurable.measure(constraints)
     val placeableX = x - placeable.width / 2
     val placeableY = y - placeable.height / 2

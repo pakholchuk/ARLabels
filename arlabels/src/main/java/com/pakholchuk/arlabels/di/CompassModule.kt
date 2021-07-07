@@ -10,7 +10,8 @@ import com.patloew.colocation.CoLocation
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+@ExperimentalCoroutinesApi
 @Module
 internal abstract class CompassModule {
 

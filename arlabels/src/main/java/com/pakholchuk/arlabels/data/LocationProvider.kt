@@ -5,10 +5,12 @@ import android.location.Location
 import com.google.android.gms.location.LocationRequest
 import com.pakholchuk.arlabels.LocationData
 import com.patloew.colocation.CoLocation
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.math.roundToInt
 
+@ExperimentalCoroutinesApi
 @SuppressLint("MissingPermission")
 internal class LocationProvider(
         private val coLocation: CoLocation
@@ -19,7 +21,7 @@ internal class LocationProvider(
         private const val SMALLEST_DISPLACEMENT_NOTICED = 1f
     }
 
-    private val locationRequest = LocationRequest().apply {
+    private val locationRequest = LocationRequest.create().apply {
         interval = LOCATION_REQUEST_INTERVAL
         fastestInterval = FASTEST_REQUEST_INTERVAL
         smallestDisplacement = SMALLEST_DISPLACEMENT_NOTICED

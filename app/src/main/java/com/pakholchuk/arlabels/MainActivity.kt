@@ -31,11 +31,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val co = CoBinding.inflate(layoutInflater)
-        binding.co.setContent {
-            AndroidView({ co.root }, Modifier.background(Color.Blue, RoundedCornerShape(2.dp)))
-        }
-        
+
         val adapter = ARLabelsAdapter2()
         binding.labelsView.onCreate(object : ARLabelsDependencyProvider {
             override fun getARViewLifecycleOwner(): LifecycleOwner {
