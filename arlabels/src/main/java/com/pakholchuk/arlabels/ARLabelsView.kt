@@ -39,6 +39,7 @@ import com.pakholchuk.arlabels.utils.ARLabelUtils.TAG
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Suppress("UnusedPrivateMember", "TooManyFunctions")
 class ARLabelsView<VH : LabelViewHolder> : FrameLayout, LifecycleObserver {
@@ -109,7 +110,9 @@ class ARLabelsView<VH : LabelViewHolder> : FrameLayout, LifecycleObserver {
             when(permissionResult) {
                 is PermissionResult.PermissionGranted -> {
                     startCamera()
-                    observeCompassState()
+                    withContext(Dispatchers.Main) {
+                        observeCompassState()
+                    }
                 }
                 is PermissionResult.PermissionDenied -> {
                     //Add your logic to handle permission denial
@@ -131,7 +134,8 @@ class ARLabelsView<VH : LabelViewHolder> : FrameLayout, LifecycleObserver {
             val cameraProvider = cameraProviderFuture.get()
             val preview = androidx.camera.core.Preview.Builder()
                 .build()
-                .also { it.setSurfaceProvider(binding.previewView.surfaceProvider) }
+                .also { it.setSurfaceProvider(binding.previewView.surfaceProvider)
+                }
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {

@@ -22,22 +22,25 @@ import com.pakholchuk.arlabels.LabelProperties
 
 @Composable
 fun Labels(
-        labelsList: List<LabelProperties>,
-        modifier: Modifier = Modifier,
-        onLabelClick: ((id: String) -> Unit)? = null,
-        content: @Composable (LabelProperties) -> Unit
+    labelsList: List<LabelProperties>,
+    modifier: Modifier = Modifier,
+    onLabelClick: ((id: String) -> Unit)? = null,
+    content: @Composable (LabelProperties) -> Unit
 ) {
-    Box(modifier = modifier.fillMaxSize().background(Color.Transparent)) {
+    Box(modifier = modifier
+        .fillMaxSize()
+        .background(Color.Transparent)) {
         labelsList.sortedByDescending { it.distance }
             .forEach {
-                Surface(Modifier
-                    .centerCoordinates(it.positionX, it.positionY)
-                    .clickable(onClick = { onLabelClick?.let { onLabelClick -> onLabelClick(it.id) } }),
+                Surface(
+                    Modifier
+                        .centerCoordinates(it.positionX, it.positionY)
+                        .clickable(onClick = { onLabelClick?.let { onLabelClick -> onLabelClick(it.id) } }),
                     color = Color.Transparent
                 ) {
                     content(it)
+                }
             }
-        }
     }
 }
 
@@ -53,13 +56,15 @@ fun Modifier.centerCoordinates(x: Int, y: Int) = this.layout { measurable, const
 @Composable
 fun Label(labelProperties: LabelProperties) {
     Surface(
-        color = Color.White.copy(alpha = labelProperties.alpha.toFloat()/256),
+        color = Color.White.copy(alpha = labelProperties.alpha.toFloat() / 256),
         shape = RoundedCornerShape(4.dp),
         border = BorderStroke(1.dp, Color.Black)
     ) {
         Column {
             Text(
-                modifier = Modifier.padding(8.dp).align(Alignment.CenterHorizontally),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .align(Alignment.CenterHorizontally),
                 textAlign = TextAlign.Center,
                 fontSize = 18.sp,
                 text = "${labelProperties.distance} m",
