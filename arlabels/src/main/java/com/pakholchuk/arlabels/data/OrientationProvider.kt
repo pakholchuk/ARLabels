@@ -30,7 +30,7 @@ internal class OrientationProvider(
     private fun sensorEventsFlow() = callbackFlow<SensorEvent> {
         val sensorEventListener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent?) {
-                event?.let { offer(event) }
+                event?.let { trySend(event) }
             }
 
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
